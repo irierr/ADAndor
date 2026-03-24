@@ -20,11 +20,6 @@
 
 #include <asynPortDriver.h>
 
-#ifdef _WIN32
-#include "ATMCD32D.h"
-#else
-#include "atmcdLXd.h"
-#endif
 #include <ShamrockCIF.h>
 
 #include <epicsExport.h>
@@ -64,7 +59,8 @@ static const char *driverName = "shamrock";
 class shamrock : public asynPortDriver
 {
 public:
-    shamrock(const char *portName, int shamrockID, const char *iniPath, int priority, int stacksize);
+    shamrock(const char *portName, int shamrockID, const char *iniPath, int priority, int stackSize,
+            int camWidth, float camPixelWidth);
 
     /* virtual methods to override from ADDriver */
     virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
@@ -111,11 +107,13 @@ private:
  * \param[in] iniPath The path to the camera ini file
  * \param[in] priority The EPICS thread priority for this driver.  0=use asyn default.
  * \param[in] stackSize The size of the stack for the EPICS port thread. 0=use asyn default.
+ * \param[in] camWidth The width of the detector to be used with the spectrograph.
+ * \param[in] camPixelWidth The width of the pixels on the detector to be used with the spectrograph.
  */
 extern "C" int shamrockConfig(const char *portName, int shamrockId, const char *iniPath, 
-                               int priority, int stackSize)
+                               int priority, int stackSize, int camWidth, float camPixelWidth)
 {
-    new shamrock( portName, shamrockId, iniPath, priority, stackSize);
+    new shamrock(portName, shamrockId, iniPath, priority, stackSize, camWidth, camPixelWidth);
     return asynSuccess;
 }
 
@@ -125,8 +123,11 @@ extern "C" int shamrockConfig(const char *portName, int shamrockId, const char *
  * \param[in] iniPath The path to the camera ini file
  * \param[in] priority The EPICS thread priority for this driver.  0=use asyn default.
  * \param[in] stackSize The size of the stack for the EPICS port thread. 0=use asyn default.
+ * \param[in] camWidth The width of the detector to be used with the spectrograph.
+ * \param[in] camPixelWidth The width of the pixels on the detector to be used with the spectrograph.
  */
-shamrock::shamrock(const char *portName, int shamrockID, const char *iniPath, int priority, int stackSize)
+shamrock::shamrock(const char *portName, int shamrockID, const char *iniPath, int priority, int stackSize,
+    int camWidth, float camPixelWidth)
     : asynPortDriver(portName, MAX_ADDR,
             asynInt32Mask | asynFloat64Mask | asynFloat32ArrayMask | asynDrvUserMask, 
             asynInt32Mask | asynFloat64Mask | asynFloat32ArrayMask,
@@ -142,8 +143,6 @@ shamrock::shamrock(const char *portName, int shamrockID, const char *iniPath, in
     float pixelWidth;
     int i;
     int numFlipperStatus;
-    int width, height;
-    float xSize, ySize;
 
     createParam(SRWavelengthString,       asynParamFloat64,   &SRWavelength_);
     createParam(SRMinWavelengthString,    asynParamFloat64,   &SRMinWavelength_);
@@ -171,30 +170,12 @@ shamrock::shamrock(const char *portName, int shamrockID, const char *iniPath, in
         return;
     }
 
-    //Get Detector dimensions
-    error = GetDetector(&width, &height);
-    if (error != DRV_SUCCESS) {
-        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-            "%s:%s:  GetDetector() status = %d\n",
-            driverName, functionName, error);
-        return;
-    }
-
     //Sets the number of pixels for calibration purposes
-    error = ShamrockSetNumberPixels(shamrockId_, width);
+    error = ShamrockSetNumberPixels(shamrockId_, camWidth);
     status = checkError(error, functionName, "ShamrockSetNumberPixels");
 
-    //Get Detector pixel size
-    error = GetPixelSize(&xSize, &ySize);
-    if (error != DRV_SUCCESS) {
-        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-            "%s:%s:  GetPixelSize() status = %d\n",
-            driverName, functionName, error);
-        return;
-    }
-
     //Set the pixel width in microns for calibration purposes.
-    error = ShamrockSetPixelWidth(shamrockId_, xSize);
+    error = ShamrockSetPixelWidth(shamrockId_, camPixelWidth);
     status = checkError(error, functionName, "ShamrockSetPixelWidth");
     
     // Determine the number of pixels on the attached CCD and the pixel size
@@ -439,16 +420,19 @@ static const iocshArg configArg1 = {"shamrockId", iocshArgInt};
 static const iocshArg configArg2 = {"iniPath", iocshArgString};
 static const iocshArg configArg3 = {"priority", iocshArgInt};
 static const iocshArg configArg4 = {"stackSize", iocshArgInt};
+static const iocshArg configArg5 = {"camWidth", iocshArgInt};
+static const iocshArg configArg6 = {"camPixelWidth", iocshArgDouble};
 static const iocshArg * const configArgs[] = {&configArg0,
                                               &configArg1,
                                               &configArg2,
                                               &configArg3,
-                                              &configArg4};
-static const iocshFuncDef configShamrock = {"shamrockConfig", 5, configArgs};
+                                              &configArg4,
+                                              &configArg5,
+                                              &configArg6};
+static const iocshFuncDef configShamrock = {"shamrockConfig", 7, configArgs};
 static void configCallFunc(const iocshArgBuf *args)
 {
-    shamrockConfig(args[0].sval, args[1].ival, args[2].sval, 
-                    args[3].ival, args[4].ival);
+    shamrockConfig(args[0].sval, args[1].ival, args[2].sval, args[3].ival, args[4].ival, args[5].ival, args[6].dval);
 }
 
 
