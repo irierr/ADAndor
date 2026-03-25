@@ -7,10 +7,11 @@ LIBRARY_IOC_WIN32 += andorCCD
 LIBRARY_IOC_Linux += andorCCD
 LIB_SRCS += andorCCD.cpp
 ifeq ($(WITH_SHAMROCK), YES)
-  LIB_SRCS += shamrock.cpp
-  USR_CPPFLAGS += -DUSE_SHAMROCK
-  LIB_LIBS_WIN32 += ShamrockCIFm
-  DBD += shamrockSupport.dbd
+  LIBRARY_IOC += shamrock
+  shamrock_SRCS += shamrock.cpp
+  shamrock_USR_CPPFLAGS += -DUSE_SHAMROCK
+  shamrock_LIBS_WIN32 += ShamrockCIFm
+  shamrock_DBD += shamrockSupport.dbd
 endif
 ifeq (win32-x86, $(findstring win32-x86, $(T_A)))
   LIB_LIBS_WIN32 += atmcd32m

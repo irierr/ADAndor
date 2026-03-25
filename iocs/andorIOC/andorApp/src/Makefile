@@ -42,9 +42,9 @@ endif
 PROD_SYS_LIBS_Linux += andor
 
 ifeq ($(WITH_SHAMROCK), YES)
-  $(PROD_NAME)_DBD += shamrockSupport.dbd
-  PROD_LIBS_WIN32 += ShamrockCIFm
-  PROD_SYS_LIBS_Linux += shamrockcif
+  shamrock_DBD += shamrockSupport.dbd
+  shamrock_PROD_LIBS_WIN32 += ShamrockCIFm
+  shamrock_PROD_SYS_LIBS_Linux += shamrockcif
 endif
 
 include $(ADCORE)/ADApp/commonDriverMakefile
