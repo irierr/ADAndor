@@ -317,3 +317,60 @@ record(bi, "$(P)$(R)FlipperMirrorExists2")
    field(SCAN, "I/O Intr")
 }
 
+record(ao, "$(P)$(R)Detector1Width")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),1,$(TIMEOUT))SR_CAM1_WIDTH")
+   field(DOL, "$(DETECTOR1_WIDTH)")
+   field(OMSL, "closed_loop")
+   field(PINI, "1")
+}
+
+record(ai, "$(P)$(R)Detector1Width_RBV") {
+   field(DTYP, "asynInt32")
+   field(SCAN, "I/O Intr")
+   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_CAM1_WIDTH")
+}
+
+record(ao, "$(P)$(R)Detector2Width") {
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),1,$(TIMEOUT))SR_CAM2_WIDTH")
+   field(DOL, "$(DETECTOR2_WIDTH)")
+   field(OMSL, "closed_loop")
+   field(PINI, "1")
+}
+
+record(ai, "$(P)$(R)Detector2Width_RBV") {
+   field(DTYP, "asynInt32")
+   field(SCAN, "I/O Intr")
+   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_CAM2_WIDTH")
+}
+
+record(ao, "$(P)$(R)Detector1PixelWidth")
+{
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),1,$(TIMEOUT))SR_CAM1_PIXEL_WIDTH")
+   field(DOL, "$(DETECTOR1_PIXEL_WIDTH)")
+   field(OMSL, "closed_loop")
+   field(PINI, "1")
+}
+
+record(ai, "$(P)$(R)Detector1PixelWidth_RBV") {
+   field(DTYP, "asynInt32")
+   field(SCAN, "I/O Intr")
+   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_CAM1_PIXEL_WIDTH")
+}
+
+record(ao, "$(P)$(R)Detector2PixelWidth") {
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),1,$(TIMEOUT))SR_CAM2_PIXEL_WIDTH")
+   field(DOL, "$(DETECTOR2_PIXEL_WIDTH)")
+   field(OMSL, "closed_loop")
+   field(PINI, "1")
+}
+
+record(ai, "$(P)$(R)Detector2PixelWidth_RBV") {
+   field(DTYP, "asynInt32")
+   field(SCAN, "I/O Intr")
+   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_CAM2_PIXEL_WIDTH")
+}

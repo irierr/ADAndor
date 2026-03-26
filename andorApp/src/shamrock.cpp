@@ -39,7 +39,10 @@ static const char *driverName = "shamrock";
 #define SRFlipperMirrorPortString     "SR_FLIPPER_MIRROR_PORT"
 #define SRSlitExistsString            "SR_SLIT_EXISTS"
 #define SRSlitSizeString              "SR_SLIT_SIZE"
-
+#define SRCam1WidthString             "SR_CAM1_WIDTH"
+#define SRCam2WidthString             "SR_CAM2_WIDTH"
+#define SRCam1PixelWidthString        "SR_CAM1_PIXEL_WIDTH"
+#define SRCam2PixelWidthString        "SR_CAM2_PIXEL_WIDTH"
 
 #define MAX_ERROR_MESSAGE_SIZE 100
 
@@ -53,22 +56,13 @@ static const char *driverName = "shamrock";
 // Maximum number of address.
 #define MAX_ADDR 4
 
-/**
- * \brief Holds configuration of camera connected to shamrock
- */
-struct cameraConfig {
-    int cameraWidth;    /* The width of the camera in pixels */
-    float pixelWidth;   /* The width of one pixel on the sensor in micrometres */
-};
-
 /** Driver for Andor Shamrock spectrographs.
  * One instance of this class will control one spectrograph.
  */
 class shamrock : public asynPortDriver
 {
 public:
-    shamrock(const char *portName, int shamrockID, const char *iniPath, int priority, int stackSize,
-            int cam1Width, float cam1PixelWidth, int cam2Width, float cam2PixelWidth);
+    shamrock(const char *portName, int shamrockID, const char *iniPath, int priority, int stackSize);
 
     /* virtual methods to override from ADDriver */
     virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
@@ -77,19 +71,23 @@ public:
     void report(FILE *fp, int details);
 
 protected:
-    int SRWavelength_;          /** Wavelength                   (float64 read/write) */
+    int SRWavelength_;          /** Wavelength              (float64 read/write)*/
     #define FIRST_SR_PARAM SRWavelength_
-    int SRMinWavelength_;       /** Min wavelength               (float64 read/write) */
-    int SRMaxWavelength_;       /** Min wavelength               (float64 read/write) */
-    int SRCalibration_;         /** Calibration                  (float32 array read) */
-    int SRGrating_;             /** Grating                      (int32 read/write) */
-    int SRNumGratings_;         /** Number of gratings           (int32 read) */
-    int SRGratingExists_;       /** Grating exists               (int32 read) */
-    int SRFlipperMirrorExists_; /** Flipper Mirror exists        (int32 read) */
-    int SRFlipperMirrorPort_;   /** Flipper Mirror Port          (int32 read/write) */
-    int SRSlitExists_;          /** Slit exists                  (int32 read) */
-    int SRSlitSize_;            /** Slit width                   (float64 read/write) */
-    #define LAST_SR_PARAM SRSlitSize_
+    int SRMinWavelength_;       /** Min wavelength          (float64 read/write)*/
+    int SRMaxWavelength_;       /** Min wavelength          (float64 read/write)*/
+    int SRCalibration_;         /** Calibration             (float32 array read)*/
+    int SRGrating_;             /** Grating                 (int32 read/write)  */
+    int SRNumGratings_;         /** Number of gratings      (int32 read)        */
+    int SRGratingExists_;       /** Grating exists          (int32 read)        */
+    int SRFlipperMirrorExists_; /** Flipper Mirror exists   (int32 read)        */
+    int SRFlipperMirrorPort_;   /** Flipper Mirror Port     (int32 read/write)  */
+    int SRSlitExists_;          /** Slit exists             (int32 read)        */
+    int SRSlitSize_;            /** Slit width              (float64 read/write)*/
+    int SRCam1Width_;           /** Width of camera 1       (int32 read/write)  */
+    int SRCam2Width_;           /** Width of camera 2       (int32 read/write)  */
+    int SRCam1PixelWidth_;      /** Pixel width on camera 1 (float64 read/write)*/
+    int SRCam2PixelWidth_;      /** Pixel width on camera 2 (float64 read/write)*/
+    #define LAST_SR_PARAM SRCam2PixelWidth_
 
 
 private:
@@ -104,7 +102,6 @@ private:
     float *calibration_;
     char lastError_[MAX_ERROR_MESSAGE_SIZE];
     bool flipperMirrorIsPresent_[MAX_FLIPPER_MIRRORS];
-    cameraConfig cam1Config_, cam2Config_;
 };
 
 /** Configuration function to configure one spectrograph.
@@ -116,16 +113,10 @@ private:
  * \param[in] iniPath The path to the camera ini file
  * \param[in] priority The EPICS thread priority for this driver.  0=use asyn default.
  * \param[in] stackSize The size of the stack for the EPICS port thread. 0=use asyn default.
- * \param[in] cam1Width The width of one of the detectors attached to the spectrograph.
- * \param[in] cam1PixelWidth The width of the pixels on one of the detectors attached to the spectrograph.
- * \param[in] cam2Width The width of the other detector attached to the spectrograph.
- * \param[in] cam2PixelWidth The width of the pixels on the other detector attached to the spectrograph.
  */
-extern "C" int shamrockConfig(const char *portName, int shamrockId, const char *iniPath, int priority, int stackSize, 
-                            int cam1Width, float cam1PixelWidth, int cam2Width, float cam2PixelWidth)
+extern "C" int shamrockConfig(const char *portName, int shamrockId, const char *iniPath, int priority, int stackSize)
 {
-    new shamrock(portName, shamrockId, iniPath, priority, stackSize, 
-        cam1Width, cam1PixelWidth, cam2Width, cam2PixelWidth);
+    new shamrock(portName, shamrockId, iniPath, priority, stackSize);
     return asynSuccess;
 }
 
@@ -135,18 +126,13 @@ extern "C" int shamrockConfig(const char *portName, int shamrockId, const char *
  * \param[in] iniPath The path to the camera ini file
  * \param[in] priority The EPICS thread priority for this driver.  0=use asyn default.
  * \param[in] stackSize The size of the stack for the EPICS port thread. 0=use asyn default.
- * \param[in] cam1Width The width of one of the detectors attached to the spectrograph.
- * \param[in] cam1PixelWidth The width of the pixels on one of the detectors attached to the spectrograph.
- * \param[in] cam2Width The width of the other detector attached to the spectrograph.
- * \param[in] cam2PixelWidth The width of the pixels on the other detector attached to the spectrograph.
  */
-shamrock::shamrock(const char *portName, int shamrockID, const char *iniPath, int priority, int stackSize,
-    int cam1Width, float cam1PixelWidth, int cam2Width, float cam2PixelWidth)
+shamrock::shamrock(const char *portName, int shamrockID, const char *iniPath, int priority, int stackSize)
     : asynPortDriver(portName, MAX_ADDR,
-            asynInt32Mask | asynFloat64Mask | asynFloat32ArrayMask | asynDrvUserMask, 
+            asynInt32Mask | asynFloat64Mask | asynFloat32ArrayMask | asynDrvUserMask,
             asynInt32Mask | asynFloat64Mask | asynFloat32ArrayMask,
             ASYN_CANBLOCK | ASYN_MULTIDEVICE, 1, priority, stackSize),
-    shamrockId_(shamrockID), cam1Config_{cam1Width, cam1PixelWidth}, cam2Config_{cam2Width, cam2PixelWidth}
+    shamrockId_(shamrockID)
 {
     static const char *functionName = "shamrock";
     int status;
@@ -157,6 +143,8 @@ shamrock::shamrock(const char *portName, int shamrockID, const char *iniPath, in
     float pixelWidth;
     int i;
     int numFlipperStatus;
+    int cam1Width;
+    double cam1PixelWidth;
 
     createParam(SRWavelengthString,         asynParamFloat64,       &SRWavelength_);
     createParam(SRMinWavelengthString,      asynParamFloat64,       &SRMinWavelength_);
@@ -168,7 +156,10 @@ shamrock::shamrock(const char *portName, int shamrockID, const char *iniPath, in
     createParam(SRFlipperMirrorPortString,  asynParamInt32,         &SRFlipperMirrorPort_);
     createParam(SRFlipperMirrorExistsString,asynParamInt32,         &SRFlipperMirrorExists_);
     createParam(SRSlitExistsString,         asynParamInt32,         &SRSlitExists_);
-    createParam(SRSlitSizeString,           asynParamFloat64,       &SRSlitSize_);
+    createParam(SRCam1WidthString,          asynParamInt32,         &SRCam1Width_);
+    createParam(SRCam2WidthString,          asynParamInt32,         &SRCam2Width_);
+    createParam(SRCam1PixelWidthString,     asynParamFloat64,       &SRCam1PixelWidth_);
+    createParam(SRCam2PixelWidthString,     asynParamFloat64,       &SRCam2PixelWidth_);
 
     error = ShamrockInitialize((char *)iniPath);
 
@@ -184,10 +175,26 @@ shamrock::shamrock(const char *portName, int shamrockID, const char *iniPath, in
         return;
     }
 
+    status = getIntegerParam(SRCam1Width_, &cam1Width);
+    if (status > asynSuccess)
+    {
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s:%s: ERROR getting detector 1's width. Setting to default of 2560\n",
+            driverName, functionName);
+        cam1Width = 2560;
+    }
     //Sets the number of pixels for calibration purposes
     error = ShamrockSetNumberPixels(shamrockId_, cam1Width);
     status = checkError(error, functionName, "ShamrockSetNumberPixels");
 
+    status = getDoubleParam(SRCam1PixelWidth_, &cam1PixelWidth);
+    if (status > asynSuccess)
+    {
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s:%s: ERROR getting detector 1's pixel width. Setting to default of 6.5\n",
+            driverName, functionName);
+        cam1PixelWidth = 6.5;
+    }
     //Set the pixel width in microns for calibration purposes.
     error = ShamrockSetPixelWidth(shamrockId_, cam1PixelWidth);
     status = checkError(error, functionName, "ShamrockSetPixelWidth");
@@ -429,57 +436,26 @@ void shamrock::report(FILE *fp, int details)
     return;
 }
 
-static const iocshArg configArg0  = {"Port name",           iocshArgString};
-static const iocshArg configArg1  = {"shamrockId",          iocshArgInt};
-static const iocshArg configArg2  = {"iniPath",             iocshArgStringPath};
-static const iocshArg configArg3  = {"priority",            iocshArgInt};
-static const iocshArg configArg4  = {"stackSize",           iocshArgInt};
-static const iocshArg configArg5  = {"cam1Width",           iocshArgInt};
-static const iocshArg configArg6  = {"cam1PixelWidth",      iocshArgDouble};
-static const iocshArg configArg7  = {"cam1WidthRecord",     iocshArgStringRecord};
-static const iocshArg configArg8  = {"cam1PixelWidthRecord",iocshArgStringRecord};
-static const iocshArg configArg9  = {"cam2Width",           iocshArgInt};
-static const iocshArg configArg10 = {"cam2PixelWidth",      iocshArgDouble};
-static const iocshArg configArg11 = {"cam2WidthRecord",     iocshArgStringRecord};
-static const iocshArg configArg12 = {"cam2PixelWidthRecord",iocshArgStringRecord};
-static const iocshArg * const config1ManualArgs[] =
-    {&configArg0, &configArg1, &configArg2, &configArg3, &configArg4,
-        &configArg5, &configArg6};
-static const iocshArg * const config2ManualArgs[] =
-    {&configArg0, &configArg1, &configArg2, &configArg3, &configArg4,
-        &configArg5, &configArg6, &configArg9, &configArg10};
-static const iocshArg * const config1AutoArgs[] =
-    {&configArg0, &configArg1, &configArg2, &configArg3, &configArg4,
-        &configArg7, &configArg8};
-static const iocshArg * const config2AutoArgs[] =
-    {&configArg0, &configArg1, &configArg2, &configArg3, &configArg4,
-        &configArg7, &configArg8, &configArg11, &configArg12};
-static const iocshArg * const config1Each[] =
-    {&configArg0, &configArg1, &configArg2, &configArg3, &configArg4,
-        &configArg5, &configArg6, &configArg11, &configArg12};
+static const iocshArg configArg0 = {"Port name",        iocshArgString};
+static const iocshArg configArg1 = {"shamrockId",       iocshArgInt};
+static const iocshArg configArg2 = {"iniPath",          iocshArgStringPath};
+static const iocshArg configArg3 = {"priority",         iocshArgInt};
+static const iocshArg configArg4 = {"stackSize",        iocshArgInt};
 
-static const iocshFuncDef configShamrock1Manual = {"shamrockConfig", 7, config1ManualArgs};
-static const iocshFuncDef configShamrock2Manual = {"shamrockConfig", 9, config2ManualArgs};
-static const iocshFuncDef configShamrock1Auto   = {"shamrockConfig", 7, config1AutoArgs};
-static const iocshFuncDef configShamrock2Auto   = {"shamrockConfig", 9, config2AutoArgs};
-static const iocshFuncDef configShamrock1Each   = {"shamrockConfig", 9, config2ManualArgs};
+static const iocshArg * const configArgs[] = {&configArg0,
+                                              &configArg1,
+                                              &configArg2,
+                                              &configArg3,
+                                              &configArg4};
+static const iocshFuncDef configShamrock = {"shamrockConfig", 5, configArgs};
 
-static void configCallFunc1Cam(const iocshArgBuf *args) {
-    shamrockConfig(args[0].sval, args[1].ival, args[2].sval, args[3].ival, args[4].ival,
-        args[5].ival, args[6].dval, 0, 0.0);
-}
-static void configCallFunc2Cams(const iocshArgBuf *args) {
-    shamrockConfig(args[0].sval, args[1].ival, args[2].sval, args[3].ival, args[4].ival,
-        args[5].ival, args[6].dval, args[7].ival, args[8].dval);
+static void configCallFunc(const iocshArgBuf *args) {
+    shamrockConfig(args[0].sval, args[1].ival, args[2].sval, args[3].ival, args[4].ival);
 }
 
 static void shamrockRegister(void)
 {
-    iocshRegister(&configShamrock1Manual, configCallFunc1Cam);
-    iocshRegister(&configShamrock2Manual, configCallFunc2Cams);
-    iocshRegister(&configShamrock1Auto, configCallFunc1Cam);
-    iocshRegister(&configShamrock2Auto, configCallFunc2Cams);
-    iocshRegister(&configShamrock1Each, configCallFunc2Cams);
+    iocshRegister(&configShamrock, configCallFunc);
 }
 
 extern "C" {
