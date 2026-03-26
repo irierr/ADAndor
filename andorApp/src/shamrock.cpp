@@ -39,19 +39,14 @@ static const char *driverName = "shamrock";
 #define SRFlipperMirrorPortString     "SR_FLIPPER_MIRROR_PORT"
 #define SRSlitExistsString            "SR_SLIT_EXISTS"
 #define SRSlitSizeString              "SR_SLIT_SIZE"
-#define SRCam1WidthString             "SR_CAM1_WIDTH"
-#define SRCam2WidthString             "SR_CAM2_WIDTH"
-#define SRCam1PixelWidthString        "SR_CAM1_PIXEL_WIDTH"
-#define SRCam2PixelWidthString        "SR_CAM2_PIXEL_WIDTH"
+#define SRCamSensorWidthString        "SR_CAM_SENSOR_WIDTH"
+#define SRCamPixelWidthString         "SR_CAM_PIXEL_WIDTH"
 
 #define MAX_ERROR_MESSAGE_SIZE 100
-
 #define MAX_SLITS 4
-
 #define MAX_GRATINGS 3
-
 #define MAX_FLIPPER_MIRRORS 2
-
+#define MAX_CAMS 2
 
 // Maximum number of address.
 #define MAX_ADDR 4
@@ -83,12 +78,9 @@ protected:
     int SRFlipperMirrorPort_;   /** Flipper Mirror Port     (int32 read/write)  */
     int SRSlitExists_;          /** Slit exists             (int32 read)        */
     int SRSlitSize_;            /** Slit width              (float64 read/write)*/
-    int SRCam1Width_;           /** Width of camera 1       (int32 read/write)  */
-    int SRCam2Width_;           /** Width of camera 2       (int32 read/write)  */
-    int SRCam1PixelWidth_;      /** Pixel width on camera 1 (float64 read/write)*/
-    int SRCam2PixelWidth_;      /** Pixel width on camera 2 (float64 read/write)*/
-    #define LAST_SR_PARAM SRCam2PixelWidth_
-
+    int SRCamSensorWidth_;      /** Width of camera sensor  (int32 read/write)  */
+    int SRCamPixelWidth_;       /** Width of camera pixel   (float64 read/write)*/
+    #define LAST_SR_PARAM SRCamPixelWidth_
 
 private:
     /* Local methods to this class */
@@ -143,8 +135,8 @@ shamrock::shamrock(const char *portName, int shamrockID, const char *iniPath, in
     float pixelWidth;
     int i;
     int numFlipperStatus;
-    int cam1Width;
-    double cam1PixelWidth;
+    int camSensorWidth;
+    double camPixelWidth;
 
     createParam(SRWavelengthString,         asynParamFloat64,       &SRWavelength_);
     createParam(SRMinWavelengthString,      asynParamFloat64,       &SRMinWavelength_);
@@ -156,10 +148,8 @@ shamrock::shamrock(const char *portName, int shamrockID, const char *iniPath, in
     createParam(SRFlipperMirrorPortString,  asynParamInt32,         &SRFlipperMirrorPort_);
     createParam(SRFlipperMirrorExistsString,asynParamInt32,         &SRFlipperMirrorExists_);
     createParam(SRSlitExistsString,         asynParamInt32,         &SRSlitExists_);
-    createParam(SRCam1WidthString,          asynParamInt32,         &SRCam1Width_);
-    createParam(SRCam2WidthString,          asynParamInt32,         &SRCam2Width_);
-    createParam(SRCam1PixelWidthString,     asynParamFloat64,       &SRCam1PixelWidth_);
-    createParam(SRCam2PixelWidthString,     asynParamFloat64,       &SRCam2PixelWidth_);
+    createParam(SRCamSensorWidthString,     asynParamInt32,         &SRCamSensorWidth_);
+    createParam(SRCamPixelWidthString,      asynParamFloat64,       &SRCamPixelWidth_);
 
     error = ShamrockInitialize((char *)iniPath);
 
@@ -175,28 +165,14 @@ shamrock::shamrock(const char *portName, int shamrockID, const char *iniPath, in
         return;
     }
 
-    status = getIntegerParam(SRCam1Width_, &cam1Width);
-    if (status > asynSuccess)
-    {
-        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-            "%s:%s: ERROR getting detector 1's width. Setting to default of 2560\n",
-            driverName, functionName);
-        cam1Width = 2560;
-    }
+    getIntegerParam(0, SRCamSensorWidth_, &camSensorWidth);
     //Sets the number of pixels for calibration purposes
-    error = ShamrockSetNumberPixels(shamrockId_, cam1Width);
+    error = ShamrockSetNumberPixels(shamrockId_, camSensorWidth);
     status = checkError(error, functionName, "ShamrockSetNumberPixels");
 
-    status = getDoubleParam(SRCam1PixelWidth_, &cam1PixelWidth);
-    if (status > asynSuccess)
-    {
-        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-            "%s:%s: ERROR getting detector 1's pixel width. Setting to default of 6.5\n",
-            driverName, functionName);
-        cam1PixelWidth = 6.5;
-    }
+    getDoubleParam(0, SRCamPixelWidth_, &camPixelWidth);
     //Set the pixel width in microns for calibration purposes.
-    error = ShamrockSetPixelWidth(shamrockId_, cam1PixelWidth);
+    error = ShamrockSetPixelWidth(shamrockId_, camPixelWidth);
     status = checkError(error, functionName, "ShamrockSetPixelWidth");
     
     // Determine the number of pixels on the attached CCD and the pixel size
