@@ -11,7 +11,7 @@ ifeq ($(WITH_SHAMROCK), YES)
   shamrock_SRCS += shamrock.cpp
   shamrock_USR_CPPFLAGS += -DUSE_SHAMROCK
   shamrock_LIBS_WIN32 += ShamrockCIFm
-  shamrock_DBD += shamrockSupport.dbd
+  DBD += shamrockSupport.dbd
 endif
 ifeq (win32-x86, $(findstring win32-x86, $(T_A)))
   LIB_LIBS_WIN32 += atmcd32m
