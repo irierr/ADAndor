@@ -146,6 +146,7 @@ shamrock::shamrock(const char *portName, int shamrockID, const char *iniPath, in
     createParam(SRFlipperMirrorPortString,  asynParamInt32,         &SRFlipperMirrorPort_);
     createParam(SRFlipperMirrorExistsString,asynParamInt32,         &SRFlipperMirrorExists_);
     createParam(SRSlitExistsString,         asynParamInt32,         &SRSlitExists_);
+    createParam(SRSlitSizeString,           asynParamFloat64,       &SRSlitSize_);
     createParam(SRCamSensorWidthString,     asynParamInt32,         &SRCamSensorWidth_);
     createParam(SRCamPixelWidthString,      asynParamFloat64,       &SRCamPixelWidth_);
 
