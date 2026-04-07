@@ -242,7 +242,7 @@ asynStatus shamrock::getStatus()
     status = checkError(error, functionName, "ShamrockGetGrating");
     if (status) return asynError;
     setIntegerParam(SRGrating_, grating);
-    
+
     error = ShamrockGetWavelength(shamrockId_, &wavelength);
     status = checkError(error, functionName, "ShamrockGetWavelength");
     if (status) return asynError;
@@ -256,25 +256,18 @@ asynStatus shamrock::getStatus()
         if (status) return asynError;
         setDoubleParam(i, SRSlitSize_, width);
     }
-    
-    error = ShamrockGetCalibration(shamrockId_, calibration_, numPixels_);
-    status = checkError(error, functionName, "ShamrockGetCalibration");
-    if (status) return asynError;
-    setDoubleParam(0, SRMinWavelength_, calibration_[0]);
-    setDoubleParam(0, SRMaxWavelength_, calibration_[numPixels_-1]);
-    // We need to find a C/C++ library to do 3'rd order polynomial fit
-    // For now we do a first order fit!
-    //double slope = (calibration_[numPixels_-1] - calibration_[0]) / (numPixels_-1);
 
     for (i=0; i<MAX_ADDR; i++) {
         callParamCallbacks(i);
     }
-    
-    doCallbacksFloat32Array(calibration_, numPixels_, SRCalibration_, 0);
 
     return asynSuccess;
 }
 
+/**
+ * Sets calibration values for the shamrock based on the selected camera's pixel and sensor width.
+ * \param[in] port specifies which output port the camera we are calibrating for is connected to.
+ */
 asynStatus shamrock::calibrate(int port)
 {   // TODO: need to make sure this doesn't all get run mid init when some values are still 0
     asynStatus status;
@@ -303,9 +296,19 @@ asynStatus shamrock::calibrate(int port)
     error = ShamrockGetPixelWidth(shamrockId_, &pixelWidth);
     status = checkError(error, functionName, "ShamrockGetPixelWidth");
     calibration_ = (float *)calloc(numPixels_, sizeof(float));
+
+    error = ShamrockGetCalibration(shamrockId_, calibration_, numPixels_);
+    status = checkError(error, functionName, "ShamrockGetCalibration");
+    if (status) return asynError;
+    setDoubleParam(0, SRMinWavelength_, calibration_[0]);
+    setDoubleParam(0, SRMaxWavelength_, calibration_[numPixels_-1]);
+    // We need to find a C/C++ library to do 3'rd order polynomial fit
+    // For now we do a first order fit!
+    //double slope = (calibration_[numPixels_-1] - calibration_[0]) / (numPixels_-1);
+    
+    doCallbacksFloat32Array(calibration_, numPixels_, SRCalibration_, 0);
     return status;
 }
-  
 
 /** Sets an int32 parameter.
   * \param[in] pasynUser asynUser structure that contains the function code in pasynUser->reason. 
