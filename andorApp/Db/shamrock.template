@@ -348,7 +348,7 @@ record(ai, "$(P)$(R)DetectorSensorWidth2_RBV") {
 
 record(ao, "$(P)$(R)DetectorPixelWidth1")
 {
-   field(DTYP, "asynInt32")
+   field(DTYP, "asynFloat64")
    field(OUT,  "@asyn($(PORT),0,$(TIMEOUT))SR_CAM_PIXEL_WIDTH")
    field(DOL, "$(CAM1_PIXEL_WIDTH)")
    field(OMSL, "closed_loop")
@@ -356,13 +356,13 @@ record(ao, "$(P)$(R)DetectorPixelWidth1")
 }
 
 record(ai, "$(P)$(R)DetectorPixelWidth1_RBV") {
-   field(DTYP, "asynInt32")
+   field(DTYP, "asynFloat64")
    field(SCAN, "I/O Intr")
    field(INP,  "@asyn($(PORT),0,$(TIMEOUT))SR_CAM_PIXEL_WIDTH")
 }
 
 record(ao, "$(P)$(R)DetectorPixelWidth2") {
-   field(DTYP, "asynInt32")
+   field(DTYP, "asynFloat64")
    field(OUT,  "@asyn($(PORT),1,$(TIMEOUT))SR_CAM_PIXEL_WIDTH")
    field(DOL, "$(CAM2_PIXEL_WIDTH)")
    field(OMSL, "closed_loop")
@@ -370,7 +370,7 @@ record(ao, "$(P)$(R)DetectorPixelWidth2") {
 }
 
 record(ai, "$(P)$(R)DetectorPixelWidth2_RBV") {
-   field(DTYP, "asynInt32")
+   field(DTYP, "asynFloat64")
    field(SCAN, "I/O Intr")
    field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_CAM_PIXEL_WIDTH")
 }
