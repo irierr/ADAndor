@@ -197,9 +197,7 @@ shamrock::shamrock(const char *portName, int shamrockID, const char *iniPath, in
         flipperMirrorIsPresent_[i] = (numFlipperStatus== 1); 
         setIntegerParam(i, SRFlipperMirrorExists_, flipperMirrorIsPresent_[i]);
     }
-    
-    getStatus();
-    
+        
     for (i=0; i<MAX_ADDR; i++) {
         callParamCallbacks(i);
     }
