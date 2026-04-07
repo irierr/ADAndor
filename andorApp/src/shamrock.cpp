@@ -42,11 +42,11 @@ static const char *driverName = "shamrock";
 #define SRCamSensorWidthString        "SR_CAM_SENSOR_WIDTH"
 #define SRCamPixelWidthString         "SR_CAM_PIXEL_WIDTH"
 
+#define OUTPUT_MIRROR 1
 #define MAX_ERROR_MESSAGE_SIZE 100
 #define MAX_SLITS 4
 #define MAX_GRATINGS 3
 #define MAX_FLIPPER_MIRRORS 2
-#define MAX_CAMS 2
 
 // Maximum number of address.
 #define MAX_ADDR 4
@@ -86,6 +86,7 @@ private:
     /* Local methods to this class */
     inline asynStatus checkError(int status, const char *functionName, const char *shamrockFunction);
     asynStatus getStatus();
+    asynStatus calibrate(int port);
 
     /* Data */
     int shamrockId_;
@@ -132,11 +133,8 @@ shamrock::shamrock(const char *portName, int shamrockID, const char *iniPath, in
     float minWavelength, maxWavelength;
     int numDevices;
     int numGratings;
-    float pixelWidth;
     int i;
     int numFlipperStatus;
-    int camSensorWidth;
-    double camPixelWidth;
 
     createParam(SRWavelengthString,         asynParamFloat64,       &SRWavelength_);
     createParam(SRMinWavelengthString,      asynParamFloat64,       &SRMinWavelength_);
@@ -164,23 +162,6 @@ shamrock::shamrock(const char *portName, int shamrockID, const char *iniPath, in
             driverName, functionName, numDevices);
         return;
     }
-
-    getIntegerParam(0, SRCamSensorWidth_, &camSensorWidth);
-    //Sets the number of pixels for calibration purposes
-    error = ShamrockSetNumberPixels(shamrockId_, camSensorWidth);
-    status = checkError(error, functionName, "ShamrockSetNumberPixels");
-
-    getDoubleParam(0, SRCamPixelWidth_, &camPixelWidth);
-    //Set the pixel width in microns for calibration purposes.
-    error = ShamrockSetPixelWidth(shamrockId_, camPixelWidth);
-    status = checkError(error, functionName, "ShamrockSetPixelWidth");
-    
-    // Determine the number of pixels on the attached CCD and the pixel size
-    error = ShamrockGetNumberPixels(shamrockId_, &numPixels_);
-    status = checkError(error, functionName, "ShamrockGetNumberPixels");
-    error = ShamrockGetPixelWidth(shamrockId_, &pixelWidth);
-    status = checkError(error, functionName, "ShamrockGetPixelWidth");
-    calibration_ = (float *)calloc(numPixels_, sizeof(float));
 
     // Determine which slits are present
     for (i=0; i<MAX_SLITS; i++) {
@@ -294,6 +275,34 @@ asynStatus shamrock::getStatus()
 
     return asynSuccess;
 }
+
+asynStatus shamrock::calibrate(int port)
+{   // TODO: need to make sure this doesn't all get run mid init when some values are still 0
+    asynStatus status;
+    int error;
+    int camSensorWidth;
+    double camPixelWidth;
+    float pixelWidth;
+    static const char *functionName = "calibrate";
+
+    getIntegerParam(port, SRCamSensorWidth_, &camSensorWidth);
+    //Sets the number of pixels for calibration purposes
+    error = ShamrockSetNumberPixels(shamrockId_, camSensorWidth);
+    status = checkError(error, functionName, "ShamrockSetNumberPixels");
+
+    getDoubleParam(port, SRCamPixelWidth_, &camPixelWidth);
+    //Set the pixel width in microns for calibration purposes.
+    error = ShamrockSetPixelWidth(shamrockId_, camPixelWidth);
+    status = checkError(error, functionName, "ShamrockSetPixelWidth");
+    
+    // Determine the number of pixels on the attached CCD and the pixel size
+    error = ShamrockGetNumberPixels(shamrockId_, &numPixels_);
+    status = checkError(error, functionName, "ShamrockGetNumberPixels");
+    error = ShamrockGetPixelWidth(shamrockId_, &pixelWidth);
+    status = checkError(error, functionName, "ShamrockGetPixelWidth");
+    calibration_ = (float *)calloc(numPixels_, sizeof(float));
+    return status;
+}
   
 
 /** Sets an int32 parameter.
@@ -327,9 +336,18 @@ asynStatus shamrock::writeInt32( asynUser *pasynUser, epicsInt32 value)
             error = ShamrockSetFlipperMirror(shamrockId_, addr+1, value);
             status = checkError(error, functionName, "ShamrockSetFlipperMirror");
         }
+        if (addr == OUTPUT_MIRROR){
+            status = this->calibrate(value);
+        }
+    }
+    else if (function == SRCamSensorWidth_) {
+        int port;
+        status = getIntegerParam(OUTPUT_MIRROR, SRFlipperMirrorPort_, &port);
+        if (port==addr) {
+            status = this->calibrate(port);
+        }
     }
 
-    
     getStatus();
 
     asynPrint(pasynUserSelf, ASYN_TRACEIO_DRIVER, 
@@ -370,7 +388,14 @@ asynStatus shamrock::writeFloat64( asynUser *pasynUser, epicsFloat64 value)
           status = checkError(error, functionName, "ShamrockSetSlit");
         }
     }
-    
+    else if (function == SRCamPixelWidth_) {
+        int port;
+        status = getIntegerParam(1, SRFlipperMirrorPort_, &port);
+        if (port==addr) {
+            status = this->calibrate(port);
+        }
+    }
+
     getStatus();
 
     asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, 
@@ -437,4 +462,3 @@ static void shamrockRegister(void)
 extern "C" {
 epicsExportRegistrar(shamrockRegister);
 }
-
