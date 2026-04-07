@@ -286,12 +286,15 @@ asynStatus shamrock::calibrate(int port)
     float pixelWidth;
     static const char *functionName = "calibrate";
 
-    getIntegerParam(port, SRCamSensorWidth_, &camSensorWidth);
+    status = getIntegerParam(port, SRCamSensorWidth_, &camSensorWidth);
+    if (status > asynSuccess) return status;
+    status = getDoubleParam(port, SRCamPixelWidth_, &camPixelWidth);
+    if (status > asynSuccess) return status;
+
     //Sets the number of pixels for calibration purposes
     error = ShamrockSetNumberPixels(shamrockId_, camSensorWidth);
     status = checkError(error, functionName, "ShamrockSetNumberPixels");
 
-    getDoubleParam(port, SRCamPixelWidth_, &camPixelWidth);
     //Set the pixel width in microns for calibration purposes.
     error = ShamrockSetPixelWidth(shamrockId_, camPixelWidth);
     status = checkError(error, functionName, "ShamrockSetPixelWidth");
