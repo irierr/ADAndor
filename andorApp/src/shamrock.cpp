@@ -269,7 +269,7 @@ asynStatus shamrock::getStatus()
  * \param[in] port specifies which output port the camera we are calibrating for is connected to.
  */
 asynStatus shamrock::calibrate(int port)
-{   // TODO: need to make sure this doesn't all get run mid init when some values are still 0
+{
     asynStatus status;
     int error;
     int camSensorWidth;
@@ -277,9 +277,9 @@ asynStatus shamrock::calibrate(int port)
     float pixelWidth;
     static const char *functionName = "calibrate";
 
-    status = getIntegerParam(port, SRCamSensorWidth_, &camSensorWidth);
+    status = this->getIntegerParam(port, SRCamSensorWidth_, &camSensorWidth);
     if (status > asynSuccess) return status;
-    status = getDoubleParam(port, SRCamPixelWidth_, &camPixelWidth);
+    status = this->getDoubleParam(port, SRCamPixelWidth_, &camPixelWidth);
     if (status > asynSuccess) return status;
 
     //Sets the number of pixels for calibration purposes
@@ -347,7 +347,7 @@ asynStatus shamrock::writeInt32( asynUser *pasynUser, epicsInt32 value)
     }
     else if (function == SRCamSensorWidth_) {
         int port;
-        status = getIntegerParam(OUTPUT_MIRROR, SRFlipperMirrorPort_, &port);
+        status = this->getIntegerParam(OUTPUT_MIRROR, SRFlipperMirrorPort_, &port);
         if (port==addr) {
             status = this->calibrate(port);
         }
@@ -395,7 +395,7 @@ asynStatus shamrock::writeFloat64( asynUser *pasynUser, epicsFloat64 value)
     }
     else if (function == SRCamPixelWidth_) {
         int port;
-        status = getIntegerParam(1, SRFlipperMirrorPort_, &port);
+        status = this->getIntegerParam(1, SRFlipperMirrorPort_, &port);
         if (port==addr) {
             status = this->calibrate(port);
         }
