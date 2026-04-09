@@ -237,7 +237,6 @@ asynStatus shamrock::getStatus()
         setIntegerParam(i, SRFlipperMirrorPort_, port);
     }
 
-
     error = ShamrockGetGrating(shamrockId_, &grating);
     status = checkError(error, functionName, "ShamrockGetGrating");
     if (status) return asynError;
@@ -342,14 +341,14 @@ asynStatus shamrock::writeInt32( asynUser *pasynUser, epicsInt32 value)
             status = checkError(error, functionName, "ShamrockSetFlipperMirror");
         }
         if (addr == OUTPUT_MIRROR){
-            status = this->calibrate(value);
+            this->calibrate(value);
         }
     }
     else if (function == SRCamSensorWidth_) {
         int port;
         status = this->getIntegerParam(OUTPUT_MIRROR, SRFlipperMirrorPort_, &port);
         if (port==addr) {
-            status = this->calibrate(port);
+            this->calibrate(port);
         }
     }
 
@@ -358,7 +357,7 @@ asynStatus shamrock::writeInt32( asynUser *pasynUser, epicsInt32 value)
     asynPrint(pasynUserSelf, ASYN_TRACEIO_DRIVER, 
         "%s::%s function=%d, value=%d, status=%d\n",
         driverName, functionName, function, value, status);
-            
+
     callParamCallbacks(addr);
     return status;
 }
@@ -397,7 +396,7 @@ asynStatus shamrock::writeFloat64( asynUser *pasynUser, epicsFloat64 value)
         int port;
         status = this->getIntegerParam(1, SRFlipperMirrorPort_, &port);
         if (port==addr) {
-            status = this->calibrate(port);
+            this->calibrate(port);
         }
     }
 
