@@ -441,22 +441,23 @@ void shamrock::report(FILE *fp, int details)
     return;
 }
 
-static const iocshArg configArg0 = {"Port name",        iocshArgString};
-static const iocshArg configArg1 = {"shamrockId",       iocshArgInt};
-static const iocshArg configArg2 = {"iniPath",          iocshArgStringPath};
-static const iocshArg configArg3 = {"priority",         iocshArgInt};
-static const iocshArg configArg4 = {"stackSize",        iocshArgInt};
-
+static const iocshArg configArg0 = {"Port name", iocshArgString};
+static const iocshArg configArg1 = {"shamrockId", iocshArgInt};
+static const iocshArg configArg2 = {"iniPath", iocshArgStringPath};
+static const iocshArg configArg3 = {"priority", iocshArgInt};
+static const iocshArg configArg4 = {"stackSize", iocshArgInt};
 static const iocshArg * const configArgs[] = {&configArg0,
                                               &configArg1,
                                               &configArg2,
                                               &configArg3,
                                               &configArg4};
 static const iocshFuncDef configShamrock = {"shamrockConfig", 5, configArgs};
-
-static void configCallFunc(const iocshArgBuf *args) {
-    shamrockConfig(args[0].sval, args[1].ival, args[2].sval, args[3].ival, args[4].ival);
+static void configCallFunc(const iocshArgBuf *args)
+{
+    shamrockConfig(args[0].sval, args[1].ival, args[2].sval, 
+                    args[3].ival, args[4].ival);
 }
+
 
 static void shamrockRegister(void)
 {
@@ -466,3 +467,4 @@ static void shamrockRegister(void)
 extern "C" {
 epicsExportRegistrar(shamrockRegister);
 }
+
