@@ -288,7 +288,7 @@ asynStatus shamrock::calibrate(int port)
     //Set the pixel width in microns for calibration purposes.
     error = ShamrockSetPixelWidth(shamrockId_, camPixelWidth);
     status = checkError(error, functionName, "ShamrockSetPixelWidth");
-    
+
     // Determine the number of pixels on the attached CCD and the pixel size
     error = ShamrockGetNumberPixels(shamrockId_, &numPixels_);
     status = checkError(error, functionName, "ShamrockGetNumberPixels");
@@ -301,10 +301,7 @@ asynStatus shamrock::calibrate(int port)
     if (status) return asynError;
     setDoubleParam(0, SRMinWavelength_, calibration_[0]);
     setDoubleParam(0, SRMaxWavelength_, calibration_[numPixels_-1]);
-    // We need to find a C/C++ library to do 3'rd order polynomial fit
-    // For now we do a first order fit!
-    //double slope = (calibration_[numPixels_-1] - calibration_[0]) / (numPixels_-1);
-    
+
     doCallbacksFloat32Array(calibration_, numPixels_, SRCalibration_, 0);
     return status;
 }
