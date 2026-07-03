@@ -41,6 +41,8 @@ static const char *driverName = "shamrock";
 #define SRSlitSizeString              "SR_SLIT_SIZE"
 #define SRCamSensorWidthString        "SR_CAM_SENSOR_WIDTH"
 #define SRCamPixelWidthString         "SR_CAM_PIXEL_WIDTH"
+#define SRCCDMinWavelengthString      "SR_CCD_MIN_WAVELENGTH"
+#define SRCCDMaxWavelengthString      "SR_CCD_MAX_WAVELENGTH"
 
 #define OUTPUT_MIRROR 1
 #define MAX_ERROR_MESSAGE_SIZE 100
@@ -64,6 +66,7 @@ public:
     virtual asynStatus writeFloat64(asynUser *pasynUser, epicsFloat64 value);
     virtual asynStatus readFloat32Array(asynUser *pasynUser, epicsFloat32 *pValue, size_t nElements, size_t *nIn);
     void report(FILE *fp, int details);
+    asynStatus updateInitialPVs();
 
 protected:
     int SRWavelength_;          /** Wavelength              (float64 read/write)*/
@@ -80,7 +83,9 @@ protected:
     int SRSlitSize_;            /** Slit width              (float64 read/write)*/
     int SRCamSensorWidth_;      /** Width of camera sensor  (int32 read/write)  */
     int SRCamPixelWidth_;       /** Width of camera pixel   (float64 read/write)*/
-    #define LAST_SR_PARAM SRCamPixelWidth_
+    int SRCCDMinWavelength;     /** wavelength of camera    (float64 read)      */
+    int SRCCDMaxWavelength;     /** wavelength of camera    (float64 read)      */
+    #define LAST_SR_PARAM SRCCDMaxWavelength
 
 private:
     /* Local methods to this class */
@@ -109,8 +114,9 @@ private:
  */
 extern "C" int shamrockConfig(const char *portName, int shamrockId, const char *iniPath, int priority, int stackSize)
 {
-    new shamrock(portName, shamrockId, iniPath, priority, stackSize);
-    return asynSuccess;
+    shamrock *drvPvt = new shamrock(portName, shamrockId, iniPath, priority, stackSize);
+    int status = drvPvt->updateInitialPVs();
+    return status;
 }
 
 /** Constructor for the shamrock class
@@ -128,13 +134,9 @@ shamrock::shamrock(const char *portName, int shamrockID, const char *iniPath, in
     shamrockId_(shamrockID)
 {
     static const char *functionName = "shamrock";
-    int status;
+    asynStatus status;
     int error;
-    float minWavelength, maxWavelength;
     int numDevices;
-    int numGratings;
-    int i;
-    int numFlipperStatus;
 
     createParam(SRWavelengthString,         asynParamFloat64,       &SRWavelength_);
     createParam(SRMinWavelengthString,      asynParamFloat64,       &SRMinWavelength_);
@@ -149,6 +151,8 @@ shamrock::shamrock(const char *portName, int shamrockID, const char *iniPath, in
     createParam(SRSlitSizeString,           asynParamFloat64,       &SRSlitSize_);
     createParam(SRCamSensorWidthString,     asynParamInt32,         &SRCamSensorWidth_);
     createParam(SRCamPixelWidthString,      asynParamFloat64,       &SRCamPixelWidth_);
+    createParam(SRCCDMinWavelengthString,   asynParamFloat64,       &SRCCDMinWavelength);
+    createParam(SRCCDMaxWavelengthString,   asynParamFloat64,       &SRCCDMaxWavelength);
 
     error = ShamrockInitialize((char *)iniPath);
 
@@ -161,8 +165,32 @@ shamrock::shamrock(const char *portName, int shamrockID, const char *iniPath, in
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
             "%s:%s:  No Shamrock spectrographs found, numDevices=%d\n",
             driverName, functionName, numDevices);
-        return;
     }
+    return;
+}
+
+inline asynStatus shamrock::checkError(int status, const char *functionName, const char *shamrockFunction)
+{
+    if (status != SHAMROCK_SUCCESS) {
+        ShamrockGetFunctionReturnDescription(status, lastError_, sizeof(lastError_));
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s:%s: ERROR calling %s Description=%s\n",
+            driverName, functionName, shamrockFunction, lastError_);
+        return asynError;
+    }
+    return asynSuccess;
+}
+
+asynStatus shamrock::updateInitialPVs()
+{
+    static const char *functionName = "updateInitialPVs";
+    asynStatus status;
+    int error;
+    float minWavelength, maxWavelength;
+    int numGratings;
+    int i;
+    int numFlipperStatus;
+    float low, high;
 
     // Determine which slits are present
     for (i=0; i<MAX_SLITS; i++) {
@@ -197,24 +225,22 @@ shamrock::shamrock(const char *portName, int shamrockID, const char *iniPath, in
         flipperMirrorIsPresent_[i] = (numFlipperStatus== 1); 
         setIntegerParam(i, SRFlipperMirrorExists_, flipperMirrorIsPresent_[i]);
     }
+
+    // Get the wavelength limits for the detector ports
+    for (i=0; i<2; i++) {
+        error = ShamrockGetCCDLimits(shamrockId_, i, &low, &high);
+        status = checkError(error, functionName, "ShamrockGetCCDLimits");
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s:%s: ShamrockGetCCDLimits returned low=%f, high=%f\n", 
+            driverName, functionName, low, high);
+        setDoubleParam(i, SRCCDMinWavelength, low);
+        setDoubleParam(i, SRCCDMaxWavelength, high);
+    }
         
     for (i=0; i<MAX_ADDR; i++) {
         callParamCallbacks(i);
     }
-    
-    return;
-}
-
-inline asynStatus shamrock::checkError(int status, const char *functionName, const char *shamrockFunction)
-{
-    if (status != SHAMROCK_SUCCESS) {
-        ShamrockGetFunctionReturnDescription(status, lastError_, sizeof(lastError_));
-        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-            "%s:%s: ERROR calling %s Description=%s\n",
-            driverName, functionName, shamrockFunction, lastError_);
-        return asynError;
-    }
-    return asynSuccess;
+    return status;
 }
 
 asynStatus shamrock::getStatus()
@@ -327,8 +353,11 @@ asynStatus shamrock::writeInt32( asynUser *pasynUser, epicsInt32 value)
     status = setIntegerParam(addr, function, value);
 
     if (function == SRGrating_) {
+        int port;
         error = ShamrockSetGrating(shamrockId_, value);
         status = checkError(error, functionName, "ShamrockSetGrating");
+        status = this->getIntegerParam(OUTPUT_MIRROR, SRFlipperMirrorPort_, &port);
+        status = this->calibrate(port);
     }
     
     // Port Information
@@ -379,9 +408,11 @@ asynStatus shamrock::writeFloat64( asynUser *pasynUser, epicsFloat64 value)
     status = setDoubleParam(addr, function, value);
 
     if (function == SRWavelength_) {
+        int port;
         error = ShamrockSetWavelength(shamrockId_, (float) value);
         status = checkError(error, functionName, "ShamrockSetWavelength");
-    
+        status = this->getIntegerParam(OUTPUT_MIRROR, SRFlipperMirrorPort_, &port);
+        status = this->calibrate(port);
     } 
     else if (function == SRSlitSize_) {
         if (slitIsPresent_[addr]) {

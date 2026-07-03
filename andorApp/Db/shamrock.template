@@ -392,3 +392,31 @@ record(ai, "$(P)$(R)DetectorPixelWidth2_RBV") {
    field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_CAM_PIXEL_WIDTH")
    field(EGU, "μm")
 }
+
+record(ai, "$(P)$(R)CCDMinWavelength1_RBV") {
+   field(DTYP, "asynFloat64")
+   field(SCAN, "I/O Intr")
+   field(INP,  "@asyn($(PORT),0,$(TIMEOUT))SR_CCD_MIN_WAVELENGTH")
+   field(EGU, "nm")
+}
+
+record(ai, "$(P)$(R)CCDMaxWavelength1_RBV") {
+   field(DTYP, "asynFloat64")
+   field(SCAN, "I/O Intr")
+   field(INP,  "@asyn($(PORT),0,$(TIMEOUT))SR_CCD_MAX_WAVELENGTH")
+   field(EGU, "nm")
+}
+
+record(ai, "$(P)$(R)CCDMinWavelength2_RBV") {
+   field(DTYP, "asynFloat64")
+   field(SCAN, "I/O Intr")
+   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_CCD_MIN_WAVELENGTH")
+   field(EGU, "nm")
+}
+
+record(ai, "$(P)$(R)CCDMaxWavelength2_RBV") {
+   field(DTYP, "asynFloat64")
+   field(SCAN, "I/O Intr")
+   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_CCD_MAX_WAVELENGTH")
+   field(EGU, "nm")
+}
