@@ -13,6 +13,8 @@ include $(TOP)/configure/CONFIG
 
 DB += andorCCD.template
 DB += shamrock.template
+DB += andorCCD_settings.req
+DB += shamrock_settings.req
 
 #----------------------------------------------------
 # If <anyname>.db template is not named <anyname>*.template add
