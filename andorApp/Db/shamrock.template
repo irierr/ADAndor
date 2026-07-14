@@ -80,7 +80,7 @@ record(ai, "$(P)$(R)Wavelength_RBV")
    field(EGU, "nm")
 }
 
-record(ai, "$(P)$(R)MinWavelength")
+record(ai, "$(P)$(R)MinWavelength_RBV")
 {
    field(DTYP, "asynFloat64")
    field(INP,  "@asyn($(PORT),0,$(TIMEOUT))SR_MIN_WAVELENGTH")
@@ -89,7 +89,7 @@ record(ai, "$(P)$(R)MinWavelength")
    field(EGU, "nm")
 }
 
-record(ai, "$(P)$(R)MaxWavelength")
+record(ai, "$(P)$(R)MaxWavelength_RBV")
 {
    field(DTYP, "asynFloat64")
    field(INP,  "@asyn($(PORT),0,$(TIMEOUT))SR_MAX_WAVELENGTH")
@@ -98,7 +98,7 @@ record(ai, "$(P)$(R)MaxWavelength")
    field(EGU, "nm")
 }
 
-record(ai, "$(P)$(R)MinWavelength1")
+record(ai, "$(P)$(R)MinWavelength1_RBV")
 {
    field(DTYP, "asynFloat64")
    field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_MIN_WAVELENGTH")
@@ -107,7 +107,7 @@ record(ai, "$(P)$(R)MinWavelength1")
    field(EGU, "nm")
 }
 
-record(ai, "$(P)$(R)MaxWavelength1")
+record(ai, "$(P)$(R)MaxWavelength1_RBV")
 {
    field(DTYP, "asynFloat64")
    field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_MAX_WAVELENGTH")
@@ -116,7 +116,7 @@ record(ai, "$(P)$(R)MaxWavelength1")
    field(EGU, "nm")
 }
 
-record(ai, "$(P)$(R)MinWavelength2")
+record(ai, "$(P)$(R)MinWavelength2_RBV")
 {
    field(DTYP, "asynFloat64")
    field(INP,  "@asyn($(PORT),2,$(TIMEOUT))SR_MIN_WAVELENGTH")
@@ -125,7 +125,7 @@ record(ai, "$(P)$(R)MinWavelength2")
    field(EGU, "nm")
 }
 
-record(ai, "$(P)$(R)MaxWavelength2")
+record(ai, "$(P)$(R)MaxWavelength2_RBV")
 {
    field(DTYP, "asynFloat64")
    field(INP,  "@asyn($(PORT),2,$(TIMEOUT))SR_MAX_WAVELENGTH")
@@ -134,7 +134,7 @@ record(ai, "$(P)$(R)MaxWavelength2")
    field(EGU, "nm")
 }
 
-record(ai, "$(P)$(R)MinWavelength3")
+record(ai, "$(P)$(R)MinWavelength3_RBV")
 {
    field(DTYP, "asynFloat64")
    field(INP,  "@asyn($(PORT),3,$(TIMEOUT))SR_MIN_WAVELENGTH")
@@ -143,7 +143,7 @@ record(ai, "$(P)$(R)MinWavelength3")
    field(EGU, "nm")
 }
 
-record(ai, "$(P)$(R)MaxWavelength3")
+record(ai, "$(P)$(R)MaxWavelength3_RBV")
 {
    field(DTYP, "asynFloat64")
    field(INP,  "@asyn($(PORT),3,$(TIMEOUT))SR_MAX_WAVELENGTH")
