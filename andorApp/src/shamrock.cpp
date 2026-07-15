@@ -240,6 +240,7 @@ asynStatus shamrock::updateInitialPVs()
     for (i=0; i<MAX_ADDR; i++) {
         callParamCallbacks(i);
     }
+    status = getStatus();
     return status;
 }
 
@@ -285,8 +286,7 @@ asynStatus shamrock::getStatus()
     for (i=0; i<MAX_ADDR; i++) {
         callParamCallbacks(i);
     }
-
-    return asynSuccess;
+    return status;
 }
 
 /**

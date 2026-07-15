@@ -64,7 +64,6 @@ record(bi, "$(P)$(R)GratingExists3")
 # Wavelength
 record(ao, "$(P)$(R)Wavelength")
 {
-   field(PINI, "1")
    field(DTYP, "asynFloat64")
    field(OUT,  "@asyn($(PORT),0,$(TIMEOUT))SR_WAVELENGTH")
    field(PREC, "2")
