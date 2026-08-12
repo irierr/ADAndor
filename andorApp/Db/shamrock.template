@@ -4,7 +4,6 @@
 
 record(mbbo, "$(P)$(R)Grating")
 {
-   field(PINI, "1")
    field(DTYP, "asynInt32")
    field(OUT,  "@asyn($(PORT),0,$(TIMEOUT))SR_GRATING")
    field(ZRVL, "1")
