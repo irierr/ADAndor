@@ -169,18 +169,6 @@ shamrock::shamrock(const char *portName, int shamrockID, const char *iniPath, in
     return;
 }
 
-inline asynStatus shamrock::checkError(int status, const char *functionName, const char *shamrockFunction)
-{
-    if (status != SHAMROCK_SUCCESS) {
-        ShamrockGetFunctionReturnDescription(status, lastError_, sizeof(lastError_));
-        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-            "%s:%s: ERROR calling %s Description=%s\n",
-            driverName, functionName, shamrockFunction, lastError_);
-        return asynError;
-    }
-    return asynSuccess;
-}
-
 asynStatus shamrock::updateInitialPVs()
 {
     static const char *functionName = "updateInitialPVs";
@@ -242,6 +230,18 @@ asynStatus shamrock::updateInitialPVs()
     }
     status = getStatus();
     return status;
+}
+
+inline asynStatus shamrock::checkError(int status, const char *functionName, const char *shamrockFunction)
+{
+    if (status != SHAMROCK_SUCCESS) {
+        ShamrockGetFunctionReturnDescription(status, lastError_, sizeof(lastError_));
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s:%s: ERROR calling %s Description=%s\n",
+            driverName, functionName, shamrockFunction, lastError_);
+        return asynError;
+    }
+    return asynSuccess;
 }
 
 asynStatus shamrock::getStatus()
