@@ -179,10 +179,10 @@ asynStatus shamrock::updateInitialPVs()
     int i;
     int numFlipperStatus;
     float low, high;
+    int present;
 
     // Determine which slits are present
     for (i=0; i<MAX_SLITS; i++) {
-        int present;
         error = ShamrockAutoSlitIsPresent(shamrockId_, i+1, &present);
         status = checkError(error, functionName, "ShamrockAutoSlitIsPresent");
         slitIsPresent_[i] = (present == 1);
@@ -344,6 +344,7 @@ asynStatus shamrock::writeInt32( asynUser *pasynUser, epicsInt32 value)
     int error;
     int function = pasynUser->reason;
     int addr;
+    int port;
     static const char *functionName = "writeInt32";
 
     pasynManager->getAddr(pasynUser, &addr);
@@ -353,7 +354,6 @@ asynStatus shamrock::writeInt32( asynUser *pasynUser, epicsInt32 value)
     status = setIntegerParam(addr, function, value);
 
     if (function == SRGrating_) {
-        int port;
         error = ShamrockSetGrating(shamrockId_, value);
         status = checkError(error, functionName, "ShamrockSetGrating");
         status = this->getIntegerParam(OUTPUT_MIRROR, SRFlipperMirrorPort_, &port);
@@ -369,7 +369,6 @@ asynStatus shamrock::writeInt32( asynUser *pasynUser, epicsInt32 value)
         }
     }
     else if (function == SRCamSensorWidth_) {
-        int port;
         status = this->getIntegerParam(OUTPUT_MIRROR, SRFlipperMirrorPort_, &port);
         if (port==addr) {
             this->calibrate(port);
@@ -397,6 +396,7 @@ asynStatus shamrock::writeFloat64( asynUser *pasynUser, epicsFloat64 value)
     int error;
     int function = pasynUser->reason;
     int addr;
+    int port;
     static const char *functionName = "writeFloat64";
     
     pasynManager->getAddr(pasynUser, &addr);
@@ -406,7 +406,6 @@ asynStatus shamrock::writeFloat64( asynUser *pasynUser, epicsFloat64 value)
     status = setDoubleParam(addr, function, value);
 
     if (function == SRWavelength_) {
-        int port;
         error = ShamrockSetWavelength(shamrockId_, (float) value);
         status = checkError(error, functionName, "ShamrockSetWavelength");
         status = this->getIntegerParam(OUTPUT_MIRROR, SRFlipperMirrorPort_, &port);
@@ -419,7 +418,6 @@ asynStatus shamrock::writeFloat64( asynUser *pasynUser, epicsFloat64 value)
         }
     }
     else if (function == SRCamPixelWidth_) {
-        int port;
         status = this->getIntegerParam(1, SRFlipperMirrorPort_, &port);
         if (port==addr) {
             this->calibrate(port);
