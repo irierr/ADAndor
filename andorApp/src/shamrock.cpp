@@ -28,6 +28,7 @@ static const char *driverName = "shamrock";
 
 
 /* Shamrock driver specific parameters */
+#define SRSerialNumberString            "SR_SERIAL_NUMBER"
 #define SRWavelengthString              "SR_WAVELENGTH"
 #define SRMinWavelengthString           "SR_MIN_WAVELENGTH"
 #define SRMaxWavelengthString           "SR_MAX_WAVELENGTH"
@@ -68,8 +69,9 @@ public:
     asynStatus updateInitialPVs();
 
 protected:
+    int SRSerialNumber_;         /** Serial number           (octet read)        */
+    #define FIRST_SR_PARAM SRSerialNumber_
     int SRWavelength_;          /** Wavelength              (float64 read/write)*/
-    #define FIRST_SR_PARAM SRWavelength_
     int SRMinWavelength_;       /** Min wavelength          (float64 read/write)*/
     int SRMaxWavelength_;       /** Min wavelength          (float64 read/write)*/
     int SRCalibration_;         /** Calibration             (float32 array read)*/
@@ -129,8 +131,8 @@ extern "C" int shamrockConfig(const char *portName, int shamrockId, const char *
  */
 shamrock::shamrock(const char *portName, int shamrockID, const char *iniPath, int priority, int stackSize)
     : asynPortDriver(portName, MAX_ADDR,
-            asynInt32Mask | asynFloat64Mask | asynFloat32ArrayMask | asynDrvUserMask,
-            asynInt32Mask | asynFloat64Mask | asynFloat32ArrayMask,
+            asynInt32Mask | asynFloat64Mask | asynFloat32ArrayMask | asynOctetMask | asynDrvUserMask,
+            asynInt32Mask | asynFloat64Mask | asynFloat32ArrayMask | asynOctetMask ,
             ASYN_CANBLOCK | ASYN_MULTIDEVICE, 1, priority, stackSize),
     shamrockId_(shamrockID)
 {
@@ -139,6 +141,7 @@ shamrock::shamrock(const char *portName, int shamrockID, const char *iniPath, in
     int error;
     int numDevices;
 
+    createParam(SRSerialNumberString,           asynParamOctet,         &SRSerialNumber_);
     createParam(SRWavelengthString,             asynParamFloat64,       &SRWavelength_);
     createParam(SRMinWavelengthString,          asynParamFloat64,       &SRMinWavelength_);
     createParam(SRMaxWavelengthString,          asynParamFloat64,       &SRMaxWavelength_);
@@ -177,11 +180,16 @@ asynStatus shamrock::updateInitialPVs()
     static const char *functionName = "updateInitialPVs";
     asynStatus status;
     int error;
+    char serial[64];
     float minWavelength, maxWavelength;
     int numGratings;
     int i;
     int numFlipperStatus;
     int present;
+
+    // get device serial number
+    ShamrockGetSerialNumber(shamrockId_, serial);
+    setStringParam(SRSerialNumber_, serial);
 
     // Determine which slits are present
     for (i=SHAMROCK_SLIT_INDEX_MIN; i<=SHAMROCK_SLIT_INDEX_MAX; i++) {

@@ -2,6 +2,12 @@
 # Mark Rivers
 # April 9, 2014
 
+record(stringin, "$(P)$(R)SerialNumber") {
+   field(DTYP, "asynOctetRead")
+   field(SCAN, "I/O Intr")
+   field(INP,  "@asyn($(PORT),0,$(TIMEOUT))SR_SERIAL_NUMBER")
+}
+
 record(mbbo, "$(P)$(R)Grating")
 {
    field(DTYP, "asynInt32")
