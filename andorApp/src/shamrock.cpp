@@ -46,7 +46,8 @@ static const char *driverName = "shamrock";
 #define SRMinCamWavelengthString        "SR_MIN_CAM_WAVELENGTH"
 #define SRMaxCamWavelengthString        "SR_MAX_CAM_WAVELENGTH"
 
-#define MAX_GRATINGS 3
+// based on existing available Andor spectrograph models
+#define MAX_GRATINGS 4 // Kymera 328i has quad grating turret
 
 // Maximum number of address.
 #define MAX_ADDR 5
