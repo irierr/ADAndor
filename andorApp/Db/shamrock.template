@@ -154,14 +154,14 @@ record(ao, "$(P)$(R)SlitSize1")
 {
    field(PINI, "1")
    field(DTYP, "asynFloat64")
-   field(OUT,  "@asyn($(PORT),0,$(TIMEOUT))SR_SLIT_SIZE")
+   field(OUT,  "@asyn($(PORT),1,$(TIMEOUT))SR_SLIT_SIZE")
    field(PREC, "2")
 }
 
 record(ai, "$(P)$(R)SlitSize1_RBV")
 {
    field(DTYP, "asynFloat64")
-   field(INP,  "@asyn($(PORT),0,$(TIMEOUT))SR_SLIT_SIZE")
+   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_SLIT_SIZE")
    field(PREC, "2")
    field(SCAN, "I/O Intr")
 }
@@ -169,7 +169,7 @@ record(ai, "$(P)$(R)SlitSize1_RBV")
 record(bi, "$(P)$(R)SlitExists1")
 {
    field(DTYP, "asynInt32")
-   field(INP,  "@asyn($(PORT),0,$(TIMEOUT))SR_SLIT_EXISTS")
+   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_SLIT_EXISTS")
    field(ZNAM, "No")
    field(ZSV,  "MINOR")
    field(ONAM, "Yes")
@@ -181,14 +181,14 @@ record(ao, "$(P)$(R)SlitSize2")
 {
    field(PINI, "1")
    field(DTYP, "asynFloat64")
-   field(OUT,  "@asyn($(PORT),1,$(TIMEOUT))SR_SLIT_SIZE")
+   field(OUT,  "@asyn($(PORT),2,$(TIMEOUT))SR_SLIT_SIZE")
    field(PREC, "2")
 }
 
 record(ai, "$(P)$(R)SlitSize2_RBV")
 {
    field(DTYP, "asynFloat64")
-   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_SLIT_SIZE")
+   field(INP,  "@asyn($(PORT),2,$(TIMEOUT))SR_SLIT_SIZE")
    field(PREC, "2")
    field(SCAN, "I/O Intr")
 }
@@ -196,7 +196,7 @@ record(ai, "$(P)$(R)SlitSize2_RBV")
 record(bi, "$(P)$(R)SlitExists2")
 {
    field(DTYP, "asynInt32")
-   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_SLIT_EXISTS")
+   field(INP,  "@asyn($(PORT),2,$(TIMEOUT))SR_SLIT_EXISTS")
    field(ZNAM, "No")
    field(ZSV,  "MINOR")
    field(ONAM, "Yes")
@@ -208,14 +208,14 @@ record(ao, "$(P)$(R)SlitSize3")
 {
    field(PINI, "1")
    field(DTYP, "asynFloat64")
-   field(OUT,  "@asyn($(PORT),2,$(TIMEOUT))SR_SLIT_SIZE")
+   field(OUT,  "@asyn($(PORT),3,$(TIMEOUT))SR_SLIT_SIZE")
    field(PREC, "2")
 }
 
 record(ai, "$(P)$(R)SlitSize3_RBV")
 {
    field(DTYP, "asynFloat64")
-   field(INP,  "@asyn($(PORT),2,$(TIMEOUT))SR_SLIT_SIZE")
+   field(INP,  "@asyn($(PORT),3,$(TIMEOUT))SR_SLIT_SIZE")
    field(PREC, "2")
    field(SCAN, "I/O Intr")
 }
@@ -223,7 +223,7 @@ record(ai, "$(P)$(R)SlitSize3_RBV")
 record(bi, "$(P)$(R)SlitExists3")
 {
    field(DTYP, "asynInt32")
-   field(INP,  "@asyn($(PORT),2,$(TIMEOUT))SR_SLIT_EXISTS")
+   field(INP,  "@asyn($(PORT),3,$(TIMEOUT))SR_SLIT_EXISTS")
    field(ZNAM, "No")
    field(ZSV,  "MINOR")
    field(ONAM, "Yes")
@@ -235,14 +235,14 @@ record(ao, "$(P)$(R)SlitSize4")
 {
    field(PINI, "1")
    field(DTYP, "asynFloat64")
-   field(OUT,  "@asyn($(PORT),3,$(TIMEOUT))SR_SLIT_SIZE")
+   field(OUT,  "@asyn($(PORT),4,$(TIMEOUT))SR_SLIT_SIZE")
    field(PREC, "2")
 }
 
 record(ai, "$(P)$(R)SlitSize4_RBV")
 {
    field(DTYP, "asynFloat64")
-   field(INP,  "@asyn($(PORT),3,$(TIMEOUT))SR_SLIT_SIZE")
+   field(INP,  "@asyn($(PORT),4,$(TIMEOUT))SR_SLIT_SIZE")
    field(PREC, "2")
    field(SCAN, "I/O Intr")
 }
@@ -250,7 +250,7 @@ record(ai, "$(P)$(R)SlitSize4_RBV")
 record(bi, "$(P)$(R)SlitExists4")
 {
    field(DTYP, "asynInt32")
-   field(INP,  "@asyn($(PORT),3,$(TIMEOUT))SR_SLIT_EXISTS")
+   field(INP,  "@asyn($(PORT),4,$(TIMEOUT))SR_SLIT_EXISTS")
    field(ZNAM, "No")
    field(ZSV,  "MINOR")
    field(ONAM, "Yes")
@@ -271,7 +271,7 @@ record(bo, "$(P)$(R)FlipperMirror1")
 {
    field(PINI, "1")
    field(DTYP, "asynInt32")
-   field(OUT,  "@asyn($(PORT),0,$(TIMEOUT))SR_FLIPPER_MIRROR_PORT")
+   field(OUT,  "@asyn($(PORT),1,$(TIMEOUT))SR_FLIPPER_MIRROR_PORT")
    field(ZNAM, "Direct")
    field(ONAM, "Side")
 }
@@ -279,7 +279,7 @@ record(bo, "$(P)$(R)FlipperMirror1")
 record(bi, "$(P)$(R)FlipperMirror1_RBV")
 {
    field(DTYP, "asynInt32")
-   field(INP,  "@asyn($(PORT),0,$(TIMEOUT))SR_FLIPPER_MIRROR_PORT")
+   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_FLIPPER_MIRROR_PORT")
    field(ZNAM, "Direct")
    field(ONAM, "Side")
    field(SCAN, "I/O Intr")
@@ -288,7 +288,7 @@ record(bi, "$(P)$(R)FlipperMirror1_RBV")
 record(bi, "$(P)$(R)FlipperMirrorExists1")
 {
    field(DTYP, "asynInt32")
-   field(INP,  "@asyn($(PORT),0,$(TIMEOUT))SR_FLIPPER_MIRROR_EXISTS")
+   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_FLIPPER_MIRROR_EXISTS")
    field(ZNAM, "No")
    field(ZSV,  "MINOR")
    field(ONAM, "Yes")
@@ -300,7 +300,7 @@ record(bo, "$(P)$(R)FlipperMirror2")
 {
    field(PINI, "1")
    field(DTYP, "asynInt32")
-   field(OUT,  "@asyn($(PORT),1,$(TIMEOUT))SR_FLIPPER_MIRROR_PORT")
+   field(OUT,  "@asyn($(PORT),2,$(TIMEOUT))SR_FLIPPER_MIRROR_PORT")
    field(ZNAM, "Direct")
    field(ONAM, "Side")
 }
@@ -308,7 +308,7 @@ record(bo, "$(P)$(R)FlipperMirror2")
 record(bi, "$(P)$(R)FlipperMirror2_RBV")
 {
    field(DTYP, "asynInt32")
-   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_FLIPPER_MIRROR_PORT")
+   field(INP,  "@asyn($(PORT),2,$(TIMEOUT))SR_FLIPPER_MIRROR_PORT")
    field(ZNAM, "Direct")
    field(ONAM, "Side")
    field(SCAN, "I/O Intr")
@@ -317,7 +317,7 @@ record(bi, "$(P)$(R)FlipperMirror2_RBV")
 record(bi, "$(P)$(R)FlipperMirrorExists2")
 {
    field(DTYP, "asynInt32")
-   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_FLIPPER_MIRROR_EXISTS")
+   field(INP,  "@asyn($(PORT),2,$(TIMEOUT))SR_FLIPPER_MIRROR_EXISTS")
    field(ZNAM, "No")
    field(ZSV,  "MINOR")
    field(ONAM, "Yes")
@@ -328,7 +328,7 @@ record(bi, "$(P)$(R)FlipperMirrorExists2")
 record(ao, "$(P)$(R)DetectorSensorWidth1")
 {
    field(DTYP, "asynInt32")
-   field(OUT,  "@asyn($(PORT),0,$(TIMEOUT))SR_CAM_SENSOR_WIDTH")
+   field(OUT,  "@asyn($(PORT),1,$(TIMEOUT))SR_CAM_SENSOR_WIDTH")
    field(DOL, "$(CAM1_SENSOR_WIDTH)")
    field(OMSL, "closed_loop")
    field(PINI, "1")
@@ -338,13 +338,13 @@ record(ao, "$(P)$(R)DetectorSensorWidth1")
 record(ai, "$(P)$(R)DetectorSensorWidth1_RBV") {
    field(DTYP, "asynInt32")
    field(SCAN, "I/O Intr")
-   field(INP,  "@asyn($(PORT),0,$(TIMEOUT))SR_CAM_SENSOR_WIDTH")
+   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_CAM_SENSOR_WIDTH")
    field(EGU, "px")
 }
 
 record(ao, "$(P)$(R)DetectorSensorWidth2") {
    field(DTYP, "asynInt32")
-   field(OUT,  "@asyn($(PORT),1,$(TIMEOUT))SR_CAM_SENSOR_WIDTH")
+   field(OUT,  "@asyn($(PORT),2,$(TIMEOUT))SR_CAM_SENSOR_WIDTH")
    field(DOL, "$(CAM2_SENSOR_WIDTH)")
    field(OMSL, "closed_loop")
    field(PINI, "1")
@@ -354,14 +354,14 @@ record(ao, "$(P)$(R)DetectorSensorWidth2") {
 record(ai, "$(P)$(R)DetectorSensorWidth2_RBV") {
    field(DTYP, "asynInt32")
    field(SCAN, "I/O Intr")
-   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_CAM_SENSOR_WIDTH")
+   field(INP,  "@asyn($(PORT),2,$(TIMEOUT))SR_CAM_SENSOR_WIDTH")
    field(EGU, "px")
 }
 
 record(ao, "$(P)$(R)DetectorPixelWidth1")
 {
    field(DTYP, "asynFloat64")
-   field(OUT,  "@asyn($(PORT),0,$(TIMEOUT))SR_CAM_PIXEL_WIDTH")
+   field(OUT,  "@asyn($(PORT),1,$(TIMEOUT))SR_CAM_PIXEL_WIDTH")
    field(DOL, "$(CAM1_PIXEL_WIDTH)")
    field(OMSL, "closed_loop")
    field(PINI, "1")
@@ -371,13 +371,13 @@ record(ao, "$(P)$(R)DetectorPixelWidth1")
 record(ai, "$(P)$(R)DetectorPixelWidth1_RBV") {
    field(DTYP, "asynFloat64")
    field(SCAN, "I/O Intr")
-   field(INP,  "@asyn($(PORT),0,$(TIMEOUT))SR_CAM_PIXEL_WIDTH")
+   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_CAM_PIXEL_WIDTH")
    field(EGU, "μm")
 }
 
 record(ao, "$(P)$(R)DetectorPixelWidth2") {
    field(DTYP, "asynFloat64")
-   field(OUT,  "@asyn($(PORT),1,$(TIMEOUT))SR_CAM_PIXEL_WIDTH")
+   field(OUT,  "@asyn($(PORT),2,$(TIMEOUT))SR_CAM_PIXEL_WIDTH")
    field(DOL, "$(CAM2_PIXEL_WIDTH)")
    field(OMSL, "closed_loop")
    field(PINI, "1")
@@ -387,34 +387,34 @@ record(ao, "$(P)$(R)DetectorPixelWidth2") {
 record(ai, "$(P)$(R)DetectorPixelWidth2_RBV") {
    field(DTYP, "asynFloat64")
    field(SCAN, "I/O Intr")
-   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_CAM_PIXEL_WIDTH")
+   field(INP,  "@asyn($(PORT),2,$(TIMEOUT))SR_CAM_PIXEL_WIDTH")
    field(EGU, "μm")
 }
 
 record(ai, "$(P)$(R)MinCamWav1_RBV") {
    field(DTYP, "asynFloat64")
    field(SCAN, "I/O Intr")
-   field(INP,  "@asyn($(PORT),0,$(TIMEOUT))SR_MIN_CAM_WAVELENGTH")
+   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_MIN_CAM_WAVELENGTH")
    field(EGU, "nm")
 }
 
 record(ai, "$(P)$(R)MaxCamWav1_RBV") {
    field(DTYP, "asynFloat64")
    field(SCAN, "I/O Intr")
-   field(INP,  "@asyn($(PORT),0,$(TIMEOUT))SR_MAX_CAM_WAVELENGTH")
+   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_MAX_CAM_WAVELENGTH")
    field(EGU, "nm")
 }
 
 record(ai, "$(P)$(R)MinCamWav2_RBV") {
    field(DTYP, "asynFloat64")
    field(SCAN, "I/O Intr")
-   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_MIN_CAM_WAVELENGTH")
+   field(INP,  "@asyn($(PORT),2,$(TIMEOUT))SR_MIN_CAM_WAVELENGTH")
    field(EGU, "nm")
 }
 
 record(ai, "$(P)$(R)MaxCamWav2_RBV") {
    field(DTYP, "asynFloat64")
    field(SCAN, "I/O Intr")
-   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_MAX_CAM_WAVELENGTH")
+   field(INP,  "@asyn($(PORT),2,$(TIMEOUT))SR_MAX_CAM_WAVELENGTH")
    field(EGU, "nm")
 }

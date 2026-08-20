@@ -46,11 +46,7 @@ static const char *driverName = "shamrock";
 #define SRMinCamWavelengthString        "SR_MIN_CAM_WAVELENGTH"
 #define SRMaxCamWavelengthString        "SR_MAX_CAM_WAVELENGTH"
 
-#define OUTPUT_MIRROR 1
-#define MAX_ERROR_MESSAGE_SIZE 100
-#define MAX_SLITS 4
 #define MAX_GRATINGS 3
-#define MAX_FLIPPER_MIRRORS 2
 
 // Maximum number of address.
 #define MAX_ADDR 5
@@ -99,11 +95,11 @@ private:
 
     /* Data */
     int shamrockId_;
-    bool slitIsPresent_[MAX_SLITS];
+    bool slitIsPresent_[SHAMROCK_SLIT_INDEX_MAX];
     int numPixels_;
     float *calibration_;
-    char lastError_[MAX_ERROR_MESSAGE_SIZE];
-    bool flipperMirrorIsPresent_[MAX_FLIPPER_MIRRORS];
+    char lastError_[SHAMROCK_ERRORLENGTH];
+    bool flipperMirrorIsPresent_[SHAMROCK_FLIPPER_INDEX_MAX];
 };
 
 /** Configuration function to configure one spectrograph.
@@ -187,11 +183,11 @@ asynStatus shamrock::updateInitialPVs()
     int present;
 
     // Determine which slits are present
-    for (i=0; i<MAX_SLITS; i++) {
-        error = ShamrockAutoSlitIsPresent(shamrockId_, i+1, &present);
+    for (i=SHAMROCK_SLIT_INDEX_MIN; i<=SHAMROCK_SLIT_INDEX_MAX; i++) {
+        error = ShamrockAutoSlitIsPresent(shamrockId_, i, &present);
         status = checkError(error, functionName, "ShamrockAutoSlitIsPresent");
-        slitIsPresent_[i] = (present == 1);
-        setIntegerParam(i, SRSlitExists_, slitIsPresent_[i]);
+        slitIsPresent_[i-1] = (present == 1);
+        setIntegerParam(i, SRSlitExists_, slitIsPresent_[i-1]);
     }
 
     // Determine how many gratings are present
@@ -200,27 +196,28 @@ asynStatus shamrock::updateInitialPVs()
     setIntegerParam(SRNumGratings_, numGratings);
 
     // Get wavelength range of each grating
-    for (i=1; i<=numGratings; i++) {
+    for (i=SHAMROCK_GRATINGMIN; i<=numGratings; i++) {
         setIntegerParam(i, SRGratingExists_, 1);
         error = ShamrockGetWavelengthLimits(shamrockId_, i, &minWavelength, &maxWavelength);
         status = checkError(error, functionName, "ShamrockGetWavelengthLimits");
         setDoubleParam(i, SRMinGratingWavelength_, minWavelength);
         setDoubleParam(i, SRMaxGratingWavelength_, maxWavelength);
     }
-    for (i=numGratings; i<MAX_GRATINGS; i++) {
+    for (i=numGratings; i<=MAX_GRATINGS; i++) {
         setIntegerParam(i, SRGratingExists_, 0);
     }
 
     // Determine which Flipper Mirrors exist
-    for (i=0; i<MAX_FLIPPER_MIRRORS; i++) {
-        error = ShamrockFlipperMirrorIsPresent(shamrockId_, i+1, &numFlipperStatus);
+    for (i=SHAMROCK_FLIPPER_INDEX_MIN; i<=SHAMROCK_FLIPPER_INDEX_MAX; i++) {
+        error = ShamrockFlipperMirrorIsPresent(shamrockId_, i, &numFlipperStatus);
         status = checkError(error, functionName, "ShamrockFlipperMirrorIsPresent");
-        flipperMirrorIsPresent_[i] = (numFlipperStatus== 1); 
-        setIntegerParam(i, SRFlipperMirrorExists_, flipperMirrorIsPresent_[i]);
+        flipperMirrorIsPresent_[i-1] = (numFlipperStatus== 1); 
+        setIntegerParam(i, SRFlipperMirrorExists_, flipperMirrorIsPresent_[i-1]);
     }
 
     // Get the wavelength limits for the detector ports
-    for (i=0; i<2; i++) {
+    for (i=SHAMROCK_PORTMIN; i<=SHAMROCK_PORTMAX; i++) {
+        if (i == SHAMROCK_SIDE_PORT && !flipperMirrorIsPresent_[i]) continue;
         error = ShamrockGetCCDLimits(shamrockId_, i, &minWavelength, &maxWavelength);
         status = checkError(error, functionName, "ShamrockGetCCDLimits");
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
@@ -261,9 +258,9 @@ asynStatus shamrock::getStatus()
     int port;
 
     //Get Flipper Status
-    for (i=0; i<MAX_FLIPPER_MIRRORS; i++) {
-        if (flipperMirrorIsPresent_[i] == 0) continue;
-        error = ShamrockGetFlipperMirror(shamrockId_, i+1, &port);
+    for (i=SHAMROCK_FLIPPER_INDEX_MIN; i<=SHAMROCK_FLIPPER_INDEX_MAX; i++) {
+        if (flipperMirrorIsPresent_[i-1] == 0) continue;
+        error = ShamrockGetFlipperMirror(shamrockId_, i, &port);
         status = checkError(error, functionName, "ShamrockGetFlipperMirror");
         if (status) return asynError;
         setIntegerParam(i, SRFlipperMirrorPort_, port);
@@ -279,10 +276,10 @@ asynStatus shamrock::getStatus()
     if (status) return asynError;
     setDoubleParam(SRWavelength_, wavelength);
 
-    for (i=0; i<MAX_SLITS; i++) {
+    for (i=SHAMROCK_SLIT_INDEX_MIN; i<=SHAMROCK_SLIT_INDEX_MAX; i++) {
         setDoubleParam(i, SRSlitSize_, 0.);
-        if (slitIsPresent_[i] == 0) continue;
-        error = ShamrockGetAutoSlitWidth(shamrockId_, i+1, &width);
+        if (slitIsPresent_[i-1] == 0) continue;
+        error = ShamrockGetAutoSlitWidth(shamrockId_, i, &width);
         status = checkError(error, functionName, "ShamrockGetAutoSlitWidth");
         if (status) return asynError;
         setDoubleParam(i, SRSlitSize_, width);
@@ -361,20 +358,20 @@ asynStatus shamrock::writeInt32( asynUser *pasynUser, epicsInt32 value)
     if (function == SRGrating_) {
         error = ShamrockSetGrating(shamrockId_, value);
         status = checkError(error, functionName, "ShamrockSetGrating");
-        status = this->getIntegerParam(OUTPUT_MIRROR, SRFlipperMirrorPort_, &port);
+        status = this->getIntegerParam(SHAMROCK_OUTPUT_FLIPPER, SRFlipperMirrorPort_, &port);
         status = this->calibrate(port);
     }
     else if (function == SRFlipperMirrorPort_) {
-        if (flipperMirrorIsPresent_[addr]) {
-            error = ShamrockSetFlipperMirror(shamrockId_, addr+1, value);
+        if (flipperMirrorIsPresent_[addr-1]) {
+            error = ShamrockSetFlipperMirror(shamrockId_, addr, value);
             status = checkError(error, functionName, "ShamrockSetFlipperMirror");
         }
-        if (addr == OUTPUT_MIRROR){
+        if (addr == SHAMROCK_OUTPUT_FLIPPER){
             this->calibrate(value);
         }
     }
     else if (function == SRCamSensorWidth_) {
-        status = this->getIntegerParam(OUTPUT_MIRROR, SRFlipperMirrorPort_, &port);
+        status = this->getIntegerParam(SHAMROCK_OUTPUT_FLIPPER, SRFlipperMirrorPort_, &port);
         if (port==addr) {
             this->calibrate(port);
         }
@@ -413,19 +410,19 @@ asynStatus shamrock::writeFloat64( asynUser *pasynUser, epicsFloat64 value)
     if (function == SRWavelength_) {
         error = ShamrockSetWavelength(shamrockId_, (float) value);
         status = checkError(error, functionName, "ShamrockSetWavelength");
-        status = this->getIntegerParam(OUTPUT_MIRROR, SRFlipperMirrorPort_, &port);
+        status = this->getIntegerParam(SHAMROCK_OUTPUT_FLIPPER, SRFlipperMirrorPort_, &port);
         status = this->calibrate(port);
     } 
     else if (function == SRSlitSize_) {
-        if (slitIsPresent_[addr]) {
-          error = ShamrockSetAutoSlitWidth(shamrockId_, addr+1, (float) value);
+        if (slitIsPresent_[addr-1]) {
+          error = ShamrockSetAutoSlitWidth(shamrockId_, addr, (float) value);
           status = checkError(error, functionName, "ShamrockSetSlit");
         }
     }
     else if (function == SRCamPixelWidth_) {
-        status = this->getIntegerParam(1, SRFlipperMirrorPort_, &port);
+        status = this->getIntegerParam(SHAMROCK_OUTPUT_FLIPPER, SRFlipperMirrorPort_, &port);
         if (port==addr) {
-            this->calibrate(port);
+            status = this->calibrate(port);
         }
     }
 
