@@ -346,7 +346,7 @@ record(bi, "$(P)$(R)FlipperMirrorExists2")
    field(SCAN, "I/O Intr")
 }
 
-record(ao, "$(P)$(R)DetectorSensorWidth1")
+record(ao, "$(P)$(R)CamSensorWidth1")
 {
    field(DTYP, "asynInt32")
    field(OUT,  "@asyn($(PORT),1,$(TIMEOUT))SR_CAM_SENSOR_WIDTH")
@@ -356,14 +356,14 @@ record(ao, "$(P)$(R)DetectorSensorWidth1")
    field(EGU, "px")
 }
 
-record(ai, "$(P)$(R)DetectorSensorWidth1_RBV") {
+record(ai, "$(P)$(R)CamSensorWidth1_RBV") {
    field(DTYP, "asynInt32")
    field(SCAN, "I/O Intr")
    field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_CAM_SENSOR_WIDTH")
    field(EGU, "px")
 }
 
-record(ao, "$(P)$(R)DetectorSensorWidth2") {
+record(ao, "$(P)$(R)CamSensorWidth2") {
    field(DTYP, "asynInt32")
    field(OUT,  "@asyn($(PORT),2,$(TIMEOUT))SR_CAM_SENSOR_WIDTH")
    field(DOL, "$(CAM2_SENSOR_WIDTH)")
@@ -372,14 +372,14 @@ record(ao, "$(P)$(R)DetectorSensorWidth2") {
    field(EGU, "px")
 }
 
-record(ai, "$(P)$(R)DetectorSensorWidth2_RBV") {
+record(ai, "$(P)$(R)CamSensorWidth2_RBV") {
    field(DTYP, "asynInt32")
    field(SCAN, "I/O Intr")
    field(INP,  "@asyn($(PORT),2,$(TIMEOUT))SR_CAM_SENSOR_WIDTH")
    field(EGU, "px")
 }
 
-record(ao, "$(P)$(R)DetectorPixelWidth1")
+record(ao, "$(P)$(R)CamPixelWidth1")
 {
    field(DTYP, "asynFloat64")
    field(OUT,  "@asyn($(PORT),1,$(TIMEOUT))SR_CAM_PIXEL_WIDTH")
@@ -389,14 +389,14 @@ record(ao, "$(P)$(R)DetectorPixelWidth1")
    field(EGU, "μm")
 }
 
-record(ai, "$(P)$(R)DetectorPixelWidth1_RBV") {
+record(ai, "$(P)$(R)CamPixelWidth1_RBV") {
    field(DTYP, "asynFloat64")
    field(SCAN, "I/O Intr")
    field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_CAM_PIXEL_WIDTH")
    field(EGU, "μm")
 }
 
-record(ao, "$(P)$(R)DetectorPixelWidth2") {
+record(ao, "$(P)$(R)CamPixelWidth2") {
    field(DTYP, "asynFloat64")
    field(OUT,  "@asyn($(PORT),2,$(TIMEOUT))SR_CAM_PIXEL_WIDTH")
    field(DOL, "$(CAM2_PIXEL_WIDTH)")
@@ -405,7 +405,7 @@ record(ao, "$(P)$(R)DetectorPixelWidth2") {
    field(EGU, "μm")
 }
 
-record(ai, "$(P)$(R)DetectorPixelWidth2_RBV") {
+record(ai, "$(P)$(R)CamPixelWidth2_RBV") {
    field(DTYP, "asynFloat64")
    field(SCAN, "I/O Intr")
    field(INP,  "@asyn($(PORT),2,$(TIMEOUT))SR_CAM_PIXEL_WIDTH")
