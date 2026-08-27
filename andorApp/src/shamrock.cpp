@@ -299,43 +299,36 @@ asynStatus shamrock::getStatus()
 
 /**
  * Sets calibration values for the shamrock based on the selected camera's pixel and sensor width.
- * \param[in] port specifies which output port the camera we are calibrating for is connected to.
+ * \param[in] port specifies which output port the currently selected camera is connected to.
  */
 asynStatus shamrock::calibrate(int port)
 {
     asynStatus status;
     int error;
-    int camSensorWidth;
     double camPixelWidth;
-    float pixelWidth;
     static const char *functionName = "calibrate";
 
-    status = this->getIntegerParam(port, SRCamSensorWidth_, &camSensorWidth);
-    if (status > asynSuccess) return status;
-    status = this->getDoubleParam(port, SRCamPixelWidth_, &camPixelWidth);
-    if (status > asynSuccess) return status;
-
-    //Sets the number of pixels for calibration purposes
-    error = ShamrockSetNumberPixels(shamrockId_, camSensorWidth);
-    status = checkError(error, functionName, "ShamrockSetNumberPixels");
-
-    //Set the pixel width in microns for calibration purposes.
-    error = ShamrockSetPixelWidth(shamrockId_, camPixelWidth);
+    // Set the pixel width in microns of the currently selected camera
+    status = this->getDoubleParam(port+1, SRCamPixelWidth_, &camPixelWidth);
+    if (status == asynParamUndefined) return asynSuccess;
+    else if (status > asynSuccess) return status;
+    error = ShamrockSetPixelWidth(shamrockId_, float(camPixelWidth));
     status = checkError(error, functionName, "ShamrockSetPixelWidth");
 
-    // Determine the number of pixels on the attached detector and the pixel size
-    error = ShamrockGetNumberPixels(shamrockId_, &numPixels_);
-    status = checkError(error, functionName, "ShamrockGetNumberPixels");
-    error = ShamrockGetPixelWidth(shamrockId_, &pixelWidth);
-    status = checkError(error, functionName, "ShamrockGetPixelWidth");
-    calibration_ = (float *)calloc(numPixels_, sizeof(float));
+    // Set the number of pixels of the currently selected camera
+    status = this->getIntegerParam(port+1, SRCamSensorWidth_, &numPixels_);
+    if (status > asynSuccess) return status;
+    error = ShamrockSetNumberPixels(shamrockId_, numPixels_);
+    status = checkError(error, functionName, "ShamrockSetNumberPixels");
 
+    calibration_ = (float *)calloc(numPixels_, sizeof(float));
     error = ShamrockGetCalibration(shamrockId_, calibration_, numPixels_);
     status = checkError(error, functionName, "ShamrockGetCalibration");
     if (status) return asynError;
+
+    // Set calibrated parameters
     setDoubleParam(SRMinWavelength_, calibration_[0]);
     setDoubleParam(SRMaxWavelength_, calibration_[numPixels_-1]);
-
     doCallbacksFloat32Array(calibration_, numPixels_, SRCalibration_, 0);
     return status;
 }
@@ -373,13 +366,13 @@ asynStatus shamrock::writeInt32(asynUser *pasynUser, epicsInt32 value)
             status = checkError(error, functionName, "ShamrockSetFlipperMirror");
         }
         if (addr == SHAMROCK_OUTPUT_FLIPPER){
-            this->calibrate(value);
+            status = this->calibrate(value);
         }
     }
     else if (function == SRCamSensorWidth_) {
         status = this->getIntegerParam(SHAMROCK_OUTPUT_FLIPPER, SRFlipperMirrorPort_, &port);
-        if (port==addr) {
-            this->calibrate(port);
+        if (port==addr-1) {
+            status = this->calibrate(port);
         }
     }
 
@@ -418,7 +411,7 @@ asynStatus shamrock::writeFloat64( asynUser *pasynUser, epicsFloat64 value)
         status = checkError(error, functionName, "ShamrockSetWavelength");
         status = this->getIntegerParam(SHAMROCK_OUTPUT_FLIPPER, SRFlipperMirrorPort_, &port);
         status = this->calibrate(port);
-    } 
+    }
     else if (function == SRSlitSize_) {
         if (slitIsPresent_[addr-1]) {
           error = ShamrockSetAutoSlitWidth(shamrockId_, addr, (float) value);
@@ -427,7 +420,7 @@ asynStatus shamrock::writeFloat64( asynUser *pasynUser, epicsFloat64 value)
     }
     else if (function == SRCamPixelWidth_) {
         status = this->getIntegerParam(SHAMROCK_OUTPUT_FLIPPER, SRFlipperMirrorPort_, &port);
-        if (port==addr) {
+        if (port==(addr-1)) {
             status = this->calibrate(port);
         }
     }
