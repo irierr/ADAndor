@@ -212,7 +212,7 @@ asynStatus shamrock::updateInitialPVs()
         setDoubleParam(i, SRMinGratingWavelength_, minWavelength);
         setDoubleParam(i, SRMaxGratingWavelength_, maxWavelength);
     }
-    for (i=numGratings; i<=MAX_GRATINGS; i++) {
+    for (i=numGratings+1; i<=MAX_GRATINGS; i++) {
         setIntegerParam(i, SRGratingExists_, 0);
     }
 
@@ -229,9 +229,6 @@ asynStatus shamrock::updateInitialPVs()
         if (i == SHAMROCK_SIDE_PORT && !flipperMirrorIsPresent_[i]) continue;
         error = ShamrockGetCCDLimits(shamrockId_, i, &minWavelength, &maxWavelength);
         status = checkError(error, functionName, "ShamrockGetCCDLimits");
-        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-            "%s:%s: ShamrockGetCCDLimits returned low=%f, high=%f\n", 
-            driverName, functionName, minWavelength, maxWavelength);
         setDoubleParam(i, SRMinCamWavelength_, minWavelength);
         setDoubleParam(i, SRMaxCamWavelength_, maxWavelength);
     }
@@ -349,7 +346,7 @@ asynStatus shamrock::calibrate(int port)
   *
   * Takes action if the function code requires it.  ADAcquire, ADSizeX, and many other
   * function codes make calls to the Firewire library from this function. */
-asynStatus shamrock::writeInt32( asynUser *pasynUser, epicsInt32 value)
+asynStatus shamrock::writeInt32(asynUser *pasynUser, epicsInt32 value)
 {
     asynStatus status = asynSuccess;
     int error;
