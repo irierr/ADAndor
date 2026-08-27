@@ -229,8 +229,8 @@ asynStatus shamrock::updateInitialPVs()
         if (i == SHAMROCK_SIDE_PORT && !flipperMirrorIsPresent_[i]) continue;
         error = ShamrockGetCCDLimits(shamrockId_, i, &minWavelength, &maxWavelength);
         status = checkError(error, functionName, "ShamrockGetCCDLimits");
-        setDoubleParam(i, SRMinCamWavelength_, minWavelength);
-        setDoubleParam(i, SRMaxCamWavelength_, maxWavelength);
+        setDoubleParam(i+1, SRMinCamWavelength_, minWavelength);
+        setDoubleParam(i+1, SRMaxCamWavelength_, maxWavelength);
     }
 
     for (i=0; i<MAX_ADDR; i++) {
