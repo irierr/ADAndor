@@ -96,55 +96,55 @@ record(ai, "$(P)$(R)MaxWavelength_RBV")
    field(EGU, "nm")
 }
 
-record(ai, "$(P)$(R)MinWavelength1_RBV")
+record(ai, "$(P)$(R)MinGrateWav1_RBV")
 {
    field(DTYP, "asynFloat64")
-   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_MIN_WAVELENGTH")
+   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_MIN_GRATE_WAV")
    field(PREC, "2")
    field(SCAN, "I/O Intr")
    field(EGU, "nm")
 }
 
-record(ai, "$(P)$(R)MaxWavelength1_RBV")
+record(ai, "$(P)$(R)MaxGrateWav1_RBV")
 {
    field(DTYP, "asynFloat64")
-   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_MAX_WAVELENGTH")
+   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_MAX_GRATE_WAV")
    field(PREC, "2")
    field(SCAN, "I/O Intr")
    field(EGU, "nm")
 }
 
-record(ai, "$(P)$(R)MinWavelength2_RBV")
+record(ai, "$(P)$(R)MinGrateWav2_RBV")
 {
    field(DTYP, "asynFloat64")
-   field(INP,  "@asyn($(PORT),2,$(TIMEOUT))SR_MIN_WAVELENGTH")
+   field(INP,  "@asyn($(PORT),2,$(TIMEOUT))SR_MIN_GRATE_WAV")
    field(PREC, "2")
    field(SCAN, "I/O Intr")
    field(EGU, "nm")
 }
 
-record(ai, "$(P)$(R)MaxWavelength2_RBV")
+record(ai, "$(P)$(R)MaxGrateWav2_RBV")
 {
    field(DTYP, "asynFloat64")
-   field(INP,  "@asyn($(PORT),2,$(TIMEOUT))SR_MAX_WAVELENGTH")
+   field(INP,  "@asyn($(PORT),2,$(TIMEOUT))SR_MAX_GRATE_WAV")
    field(PREC, "2")
    field(SCAN, "I/O Intr")
    field(EGU, "nm")
 }
 
-record(ai, "$(P)$(R)MinWavelength3_RBV")
+record(ai, "$(P)$(R)MinGrateWav3_RBV")
 {
    field(DTYP, "asynFloat64")
-   field(INP,  "@asyn($(PORT),3,$(TIMEOUT))SR_MIN_WAVELENGTH")
+   field(INP,  "@asyn($(PORT),3,$(TIMEOUT))SR_MIN_GRATE_WAV")
    field(PREC, "2")
    field(SCAN, "I/O Intr")
    field(EGU, "nm")
 }
 
-record(ai, "$(P)$(R)MaxWavelength3_RBV")
+record(ai, "$(P)$(R)MaxGrateWav3_RBV")
 {
    field(DTYP, "asynFloat64")
-   field(INP,  "@asyn($(PORT),3,$(TIMEOUT))SR_MAX_WAVELENGTH")
+   field(INP,  "@asyn($(PORT),3,$(TIMEOUT))SR_MAX_GRATE_WAV")
    field(PREC, "2")
    field(SCAN, "I/O Intr")
    field(EGU, "nm")
@@ -391,30 +391,30 @@ record(ai, "$(P)$(R)DetectorPixelWidth2_RBV") {
    field(EGU, "μm")
 }
 
-record(ai, "$(P)$(R)CamMinWavelength1_RBV") {
+record(ai, "$(P)$(R)MinCamWav1_RBV") {
    field(DTYP, "asynFloat64")
    field(SCAN, "I/O Intr")
-   field(INP,  "@asyn($(PORT),0,$(TIMEOUT))SR_CAM_MIN_WAVELENGTH")
+   field(INP,  "@asyn($(PORT),0,$(TIMEOUT))SR_MIN_CAM_WAVELENGTH")
    field(EGU, "nm")
 }
 
-record(ai, "$(P)$(R)CamMaxWavelength1_RBV") {
+record(ai, "$(P)$(R)MaxCamWav1_RBV") {
    field(DTYP, "asynFloat64")
    field(SCAN, "I/O Intr")
-   field(INP,  "@asyn($(PORT),0,$(TIMEOUT))SR_CAM_MAX_WAVELENGTH")
+   field(INP,  "@asyn($(PORT),0,$(TIMEOUT))SR_MAX_CAM_WAVELENGTH")
    field(EGU, "nm")
 }
 
-record(ai, "$(P)$(R)CamMinWavelength2_RBV") {
+record(ai, "$(P)$(R)MinCamWav2_RBV") {
    field(DTYP, "asynFloat64")
    field(SCAN, "I/O Intr")
-   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_CAM_MIN_WAVELENGTH")
+   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_MIN_CAM_WAVELENGTH")
    field(EGU, "nm")
 }
 
-record(ai, "$(P)$(R)CamMaxWavelength2_RBV") {
+record(ai, "$(P)$(R)MaxCamWav2_RBV") {
    field(DTYP, "asynFloat64")
    field(SCAN, "I/O Intr")
-   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_CAM_MAX_WAVELENGTH")
+   field(INP,  "@asyn($(PORT),1,$(TIMEOUT))SR_MAX_CAM_WAVELENGTH")
    field(EGU, "nm")
 }

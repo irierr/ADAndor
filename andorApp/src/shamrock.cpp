@@ -28,21 +28,23 @@ static const char *driverName = "shamrock";
 
 
 /* Shamrock driver specific parameters */
-#define SRWavelengthString            "SR_WAVELENGTH"
-#define SRMinWavelengthString         "SR_MIN_WAVELENGTH"
-#define SRMaxWavelengthString         "SR_MAX_WAVELENGTH"
-#define SRCalibrationString           "SR_CALIBRATION"
-#define SRGratingString               "SR_GRATING"
-#define SRNumGratingsString           "SR_NUM_GRATINGS"
-#define SRGratingExistsString         "SR_GRATING_EXISTS"
-#define SRFlipperMirrorExistsString   "SR_FLIPPER_MIRROR_EXISTS"
-#define SRFlipperMirrorPortString     "SR_FLIPPER_MIRROR_PORT"
-#define SRSlitExistsString            "SR_SLIT_EXISTS"
-#define SRSlitSizeString              "SR_SLIT_SIZE"
-#define SRCamSensorWidthString        "SR_CAM_SENSOR_WIDTH"
-#define SRCamPixelWidthString         "SR_CAM_PIXEL_WIDTH"
-#define SRCamMinWavelengthString      "SR_CAM_MIN_WAVELENGTH"
-#define SRCamMaxWavelengthString      "SR_CAM_MAX_WAVELENGTH"
+#define SRWavelengthString              "SR_WAVELENGTH"
+#define SRMinWavelengthString           "SR_MIN_WAVELENGTH"
+#define SRMaxWavelengthString           "SR_MAX_WAVELENGTH"
+#define SRCalibrationString             "SR_CALIBRATION"
+#define SRGratingString                 "SR_GRATING"
+#define SRNumGratingsString             "SR_NUM_GRATINGS"
+#define SRGratingExistsString           "SR_GRATING_EXISTS"
+#define SRMinGratingWavelengthString    "SR_MIN_GRATE_WAV"
+#define SRMaxGratingWavelengthString    "SR_MAX_GRATE_WAV"
+#define SRFlipperMirrorExistsString     "SR_FLIPPER_MIRROR_EXISTS"
+#define SRFlipperMirrorPortString       "SR_FLIPPER_MIRROR_PORT"
+#define SRSlitExistsString              "SR_SLIT_EXISTS"
+#define SRSlitSizeString                "SR_SLIT_SIZE"
+#define SRCamSensorWidthString          "SR_CAM_SENSOR_WIDTH"
+#define SRCamPixelWidthString           "SR_CAM_PIXEL_WIDTH"
+#define SRMinCamWavelengthString        "SR_MIN_CAM_WAVELENGTH"
+#define SRMaxCamWavelengthString        "SR_MAX_CAM_WAVELENGTH"
 
 #define OUTPUT_MIRROR 1
 #define MAX_ERROR_MESSAGE_SIZE 100
@@ -51,7 +53,7 @@ static const char *driverName = "shamrock";
 #define MAX_FLIPPER_MIRRORS 2
 
 // Maximum number of address.
-#define MAX_ADDR 4
+#define MAX_ADDR 5
 
 /** Driver for Andor Shamrock spectrographs.
  * One instance of this class will control one spectrograph.
@@ -77,15 +79,17 @@ protected:
     int SRGrating_;             /** Grating                 (int32 read/write)  */
     int SRNumGratings_;         /** Number of gratings      (int32 read)        */
     int SRGratingExists_;       /** Grating exists          (int32 read)        */
+    int SRMinGratingWavelength_;/** Min wavelength          (float64 read/write)*/
+    int SRMaxGratingWavelength_;/** Min wavelength          (float64 read/write)*/
     int SRFlipperMirrorExists_; /** Flipper Mirror exists   (int32 read)        */
     int SRFlipperMirrorPort_;   /** Flipper Mirror Port     (int32 read/write)  */
     int SRSlitExists_;          /** Slit exists             (int32 read)        */
     int SRSlitSize_;            /** Slit width              (float64 read/write)*/
     int SRCamSensorWidth_;      /** Width of camera sensor  (int32 read/write)  */
     int SRCamPixelWidth_;       /** Width of camera pixel   (float64 read/write)*/
-    int SRCamMinWavelength_;    /** wavelength of camera    (float64 read)      */
-    int SRCamMaxWavelength_;    /** wavelength of camera    (float64 read)      */
-    #define LAST_SR_PARAM SRCamMaxWavelength_
+    int SRMinCamWavelength_;    /** wavelength of camera    (float64 read)      */
+    int SRMaxCamWavelength_;    /** wavelength of camera    (float64 read)      */
+    #define LAST_SR_PARAM SRMaxCamWavelength_
 
 private:
     /* Local methods to this class */
@@ -138,21 +142,23 @@ shamrock::shamrock(const char *portName, int shamrockID, const char *iniPath, in
     int error;
     int numDevices;
 
-    createParam(SRWavelengthString,         asynParamFloat64,       &SRWavelength_);
-    createParam(SRMinWavelengthString,      asynParamFloat64,       &SRMinWavelength_);
-    createParam(SRMaxWavelengthString,      asynParamFloat64,       &SRMaxWavelength_);
-    createParam(SRCalibrationString,        asynParamFloat32Array,  &SRCalibration_);
-    createParam(SRGratingString,            asynParamInt32,         &SRGrating_);
-    createParam(SRNumGratingsString,        asynParamInt32,         &SRNumGratings_);
-    createParam(SRGratingExistsString,      asynParamInt32,         &SRGratingExists_);
-    createParam(SRFlipperMirrorPortString,  asynParamInt32,         &SRFlipperMirrorPort_);
-    createParam(SRFlipperMirrorExistsString,asynParamInt32,         &SRFlipperMirrorExists_);
-    createParam(SRSlitExistsString,         asynParamInt32,         &SRSlitExists_);
-    createParam(SRSlitSizeString,           asynParamFloat64,       &SRSlitSize_);
-    createParam(SRCamSensorWidthString,     asynParamInt32,         &SRCamSensorWidth_);
-    createParam(SRCamPixelWidthString,      asynParamFloat64,       &SRCamPixelWidth_);
-    createParam(SRCamMinWavelengthString,   asynParamFloat64,       &SRCamMinWavelength_);
-    createParam(SRCamMaxWavelengthString,   asynParamFloat64,       &SRCamMaxWavelength_);
+    createParam(SRWavelengthString,             asynParamFloat64,       &SRWavelength_);
+    createParam(SRMinWavelengthString,          asynParamFloat64,       &SRMinWavelength_);
+    createParam(SRMaxWavelengthString,          asynParamFloat64,       &SRMaxWavelength_);
+    createParam(SRCalibrationString,            asynParamFloat32Array,  &SRCalibration_);
+    createParam(SRGratingString,                asynParamInt32,         &SRGrating_);
+    createParam(SRNumGratingsString,            asynParamInt32,         &SRNumGratings_);
+    createParam(SRGratingExistsString,          asynParamInt32,         &SRGratingExists_);
+    createParam(SRMinGratingWavelengthString,   asynParamFloat64,       &SRMinGratingWavelength_);
+    createParam(SRMaxGratingWavelengthString,   asynParamFloat64,       &SRMaxGratingWavelength_);
+    createParam(SRFlipperMirrorPortString,      asynParamInt32,         &SRFlipperMirrorPort_);
+    createParam(SRFlipperMirrorExistsString,    asynParamInt32,         &SRFlipperMirrorExists_);
+    createParam(SRSlitExistsString,             asynParamInt32,         &SRSlitExists_);
+    createParam(SRSlitSizeString,               asynParamFloat64,       &SRSlitSize_);
+    createParam(SRCamSensorWidthString,         asynParamInt32,         &SRCamSensorWidth_);
+    createParam(SRCamPixelWidthString,          asynParamFloat64,       &SRCamPixelWidth_);
+    createParam(SRMinCamWavelengthString,       asynParamFloat64,       &SRMinCamWavelength_);
+    createParam(SRMaxCamWavelengthString,       asynParamFloat64,       &SRMaxCamWavelength_);
 
     error = ShamrockInitialize((char *)iniPath);
 
@@ -178,7 +184,6 @@ asynStatus shamrock::updateInitialPVs()
     int numGratings;
     int i;
     int numFlipperStatus;
-    float low, high;
     int present;
 
     // Determine which slits are present
@@ -199,13 +204,13 @@ asynStatus shamrock::updateInitialPVs()
         setIntegerParam(i, SRGratingExists_, 1);
         error = ShamrockGetWavelengthLimits(shamrockId_, i, &minWavelength, &maxWavelength);
         status = checkError(error, functionName, "ShamrockGetWavelengthLimits");
-        setDoubleParam(i, SRMinWavelength_, minWavelength);
-        setDoubleParam(i, SRMaxWavelength_, maxWavelength);
+        setDoubleParam(i, SRMinGratingWavelength_, minWavelength);
+        setDoubleParam(i, SRMaxGratingWavelength_, maxWavelength);
     }
     for (i=numGratings; i<MAX_GRATINGS; i++) {
         setIntegerParam(i, SRGratingExists_, 0);
     }
-    
+
     // Determine which Flipper Mirrors exist
     for (i=0; i<MAX_FLIPPER_MIRRORS; i++) {
         error = ShamrockFlipperMirrorIsPresent(shamrockId_, i+1, &numFlipperStatus);
@@ -216,15 +221,15 @@ asynStatus shamrock::updateInitialPVs()
 
     // Get the wavelength limits for the detector ports
     for (i=0; i<2; i++) {
-        error = ShamrockGetCCDLimits(shamrockId_, i, &low, &high);
+        error = ShamrockGetCCDLimits(shamrockId_, i, &minWavelength, &maxWavelength);
         status = checkError(error, functionName, "ShamrockGetCCDLimits");
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
             "%s:%s: ShamrockGetCCDLimits returned low=%f, high=%f\n", 
-            driverName, functionName, low, high);
-        setDoubleParam(i, SRCamMinWavelength_, low);
-        setDoubleParam(i, SRCamMaxWavelength_, high);
+            driverName, functionName, minWavelength, maxWavelength);
+        setDoubleParam(i, SRMinCamWavelength_, minWavelength);
+        setDoubleParam(i, SRMaxCamWavelength_, maxWavelength);
     }
-        
+
     for (i=0; i<MAX_ADDR; i++) {
         callParamCallbacks(i);
     }
@@ -325,8 +330,8 @@ asynStatus shamrock::calibrate(int port)
     error = ShamrockGetCalibration(shamrockId_, calibration_, numPixels_);
     status = checkError(error, functionName, "ShamrockGetCalibration");
     if (status) return asynError;
-    setDoubleParam(0, SRMinWavelength_, calibration_[0]);
-    setDoubleParam(0, SRMaxWavelength_, calibration_[numPixels_-1]);
+    setDoubleParam(SRMinWavelength_, calibration_[0]);
+    setDoubleParam(SRMaxWavelength_, calibration_[numPixels_-1]);
 
     doCallbacksFloat32Array(calibration_, numPixels_, SRCalibration_, 0);
     return status;
